@@ -1,55 +1,50 @@
-appengine-skeleton
+Tiny Insta
 ==================
 
-This is a generated application from the appengine-skeleton archetype.
-
-See the [Google App Engine standard environment documentation][ae-docs] for more
-detailed instructions.
-
-[ae-docs]: https://cloud.google.com/appengine/docs/java/
-
-
-* [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-* [Maven](https://maven.apache.org/download.cgi) (at least 3.5)
-* [Google Cloud SDK](https://cloud.google.com/sdk/) (aka gcloud)
+Application Instagram-like propulsée par Google App Engine
 
 ## Setup
 
-    gcloud init
-    gcloud auth application-default login
+Dans votre pom.xml, changez {project-id} par votre ID de projet GAE
+
+    <configuration>
+        <appId>{project-id}</appId>
+    </configuration>
+
+Même chose pour src/main/webapp/WEB-INF/appengine-web.xml
 
 ## Maven
-### Running locally
+### Run en local
 
-    mvn appengine:devserver
+    mvn appengine:run
 
-### Deploying
+### Déployer
 
-    mvn appengine:update
+    mvn appengine:deploy
 
-## Testing
+## Comment utiliser git et contributer au projet
+### Commandes basiques
+#### Cloner le projet
+    git clone https://github.com/Taraal/TinyInsta
+#### Voir le statut de votre projet git
+    git status
+#### Ajouter des fichiers au Git
+    git add -A  #Attention, ajoute TOUS les fichiers du dossier et des sous-dossiers
+    git add <nom> #Ajoute un fichier ou dossier
+#### Commit des changements
+    git commit -m "Votre message" #Ecrire un message descriptif de ce que vous avez modifié
+    OU 
+    git commit -a -m "Votre message" #Equivalent à git add -A + git commit -m
+#### Effacer le dernier commit effectué
+    git reset HEAD~
+#### Mettre les changements en ligne
+    git push 
 
-    mvn verify
-
-As you add / modify the source code (`src/main/java/...`) it's very useful to add
-[unit testing](https://cloud.google.com/appengine/docs/java/tools/localunittesting)
-to (`src/main/test/...`).  The following resources are quite useful:
-
-* [Junit4](http://junit.org/junit4/)
-* [Mockito](http://mockito.org/)
-* [Truth](http://google.github.io/truth/)
-
-## Updating to latest Artifacts
-
-An easy way to keep your projects up to date is to use the maven [Versions plugin][versions-plugin].
-
-    mvn versions:display-plugin-updates
-    mvn versions:display-dependency-updates
-    mvn versions:use-latest-versions
-
-Note - Be careful when changing `javax.servlet` as App Engine Standard uses 3.1 for Java 8, and 2.5
-for Java 7.
-
-Our usual process is to test, update the versions, then test again before committing back.
-
-[plugin]: http://www.mojohaus.org/versions-maven-plugin/
+### Gestion des branches
+#### Créer une branche
+    git branch <nom de la branche>
+#### Changer de branche
+    git checkout <nom de la branche>
+#### Merger la branche B sur la branche A
+    git checkout A 
+    git merge B

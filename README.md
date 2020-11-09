@@ -48,3 +48,20 @@ Même chose pour src/main/webapp/WEB-INF/appengine-web.xml
 #### Merger la branche B sur la branche A
     git checkout A 
     git merge B
+
+### Workflow complet 
+#### Si feature majeure : création de branche
+    git branch authentification
+
+#### Workflow basique
+    git pull
+    # Codez sur nomDuFichier.java
+    git add nomDuFichier.java
+    git commit -m "Ajout de la classe nomDuFichier"
+    git push
+
+#### A la fin d'une feature majeure : merge de branche
+    git checkout master
+    git merge authentification
+    git push
+

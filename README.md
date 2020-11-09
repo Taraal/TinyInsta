@@ -13,6 +13,17 @@ Dans votre pom.xml, changez {project-id} par votre ID de projet GAE
 
 Même chose pour src/main/webapp/WEB-INF/appengine-web.xml
 
+## To Do
+
+- [ ] Authentification Google
+- [ ] Créer un post
+- [ ] Lister les posts
+- [ ] Follow un autre utilisateur
+- [ ] Liker un post
+- [ ] Interface
+- [ ] Benchmarks
+
+# Aide au suivi
 ## Maven
 ### Run en local
 

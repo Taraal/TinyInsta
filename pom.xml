@@ -14,7 +14,12 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
+    
+    <endpoints.framework.version>2.2.1</endpoints.framework.version>
+    <endpoints.management.version>1.0.12</endpoints.management.version>
+    <endpoints.project.id>tinyinsta-295119</endpoints.project.id>
   </properties>
+
 
   <prerequisites>
     <maven>3.5</maven>
@@ -27,6 +32,21 @@
       <artifactId>appengine-api-1.0-sdk</artifactId>
       <version>1.9.82</version>
     </dependency>
+    
+    <!-- [START api_management] -->
+    <dependency>
+      <groupId>com.google.endpoints</groupId>
+      <artifactId>endpoints-management-control-appengine-all</artifactId>
+      <version>1.0.12</version>
+    </dependency>
+    <!-- [END api_management] -->
+    
+    <dependency>
+      <groupId>com.google.endpoints</groupId>
+      <artifactId>endpoints-framework</artifactId>
+      <version>${endpoints.framework.version}</version>
+    </dependency>
+    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -97,6 +117,18 @@
           <retainUploadDir>true</retainUploadDir>
         </configuration>
       </plugin>
+      
+      <!-- [START endpoints_plugin] -->
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>endpoints-framework-maven-plugin</artifactId>
+        <version>2.0.1</version>
+        <configuration>
+          <!-- plugin configuration -->
+          <hostname>${endpoints.project.id}.appspot.com</hostname>
+        </configuration>
+      </plugin>
+      <!-- [END endpoints_plugin] -->
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

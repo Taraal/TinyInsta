@@ -29,15 +29,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/neebul/.m2/repository/com/google/endpoints/endpoints-framework/2.2.1/endpoints-framework-2.2.1.jar" sourcepath="C:/Users/neebul/.m2/repository/com/google/endpoints/endpoints-framework/2.2.1/endpoints-framework-2.2.1-sources.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="org.eclipse.jst.component.archivename" value="endpoints-framework-2.2.1.jar"/>
-			<attribute name="maven.groupId" value="com.google.endpoints"/>
-			<attribute name="maven.artifactId" value="endpoints-framework"/>
-			<attribute name="maven.version" value="2.2.1"/>
-			<attribute name="maven.scope" value="compile"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/TinyInsta2-1.0-SNAPSHOT/WEB-INF/classes"/>
 </classpath>

@@ -36,6 +36,8 @@ import com.google.appengine.api.datastore.Transaction;
      )
 
 public class ScoreEndpoint {
+	
+
 
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
 	public Entity postMessage(PostMessage pm) {

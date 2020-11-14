@@ -37,7 +37,7 @@
     <dependency>
       <groupId>com.google.endpoints</groupId>
       <artifactId>endpoints-management-control-appengine-all</artifactId>
-      <version>1.0.12</version>
+      <version>1.0.13</version>
     </dependency>
     <!-- [END api_management] -->
     
@@ -125,7 +125,7 @@
         <version>2.0.1</version>
         <configuration>
           <!-- plugin configuration -->
-          <hostname>${endpoints.project.id}.appspot.com</hostname>
+          <hostname>tinyinsta-295119.appspot.com</hostname>
         </configuration>
       </plugin>
       <!-- [END endpoints_plugin] -->

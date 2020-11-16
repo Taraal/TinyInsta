@@ -242,21 +242,25 @@ public class ScoreEndpoint {
 			}
 
 		
+			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+			Transaction txn = ds.beginTransaction();
+			
 		try {
 			// Count pas encore fait (com de Sylouan)
 			Long count=(long) 0;
-			for (Key e : (ArrayList<Key>) post.getProperty("like_array")) {
+			//for (Key e : (ArrayList<Key>) post.getProperty("like_array")) {
+			for (int e = 0; e <= ((ArrayList<Key>) post.getProperty("like_array")).size(); e++) {
+			
 				//response.getWriter().print((long)datastore.get(e.getKey()).getProperty("val"));
 				//response.getWriter().print(datastore.get(e.getKey()));
 				
 				// Là encore je pense que c'est pas le compteur qui est sélectionné dans e, je pense qu'il faut d'abord
 				// fait un truc du genre id = e.key.id et après un get(id).getProperty("val")
-				Key id_counter2 = e.getKey();
-				Entity counter = datastore.get(id_counter);
-				Long v=(Long)counter.getProperty("val");
-				
-				
-				count+=(long)datastore.get(e).getProperty("val");
+				Entity line = ds.get(((ArrayList<Key>) post.getProperty("like_array")).get(e));
+				Key id_line = line.getKey();
+				Entity counter2 = ds.get(id_line);
+				count+=(Long)counter2.getProperty("val");	
+				System.out.println(count);
 			} 
 			
 			//response.getWriter().print("final value:"+count);

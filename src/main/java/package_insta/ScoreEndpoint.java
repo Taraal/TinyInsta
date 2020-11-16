@@ -176,6 +176,8 @@ public class ScoreEndpoint {
 		return e;
 	}
 
+	
+	// Retourne une erreur 404 quand appelée par post.html, ligne 122
 	@ApiMethod(name = "likePost", httpMethod = HttpMethod.POST)
 	public Entity likePost(@Named("postId")String postId) throws EntityNotFoundException{
 

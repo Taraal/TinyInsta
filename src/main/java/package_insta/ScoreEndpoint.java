@@ -179,7 +179,7 @@ public class ScoreEndpoint {
 	
 	// Retourne une erreur 404 quand appelée par post.html, ligne 122
 	@ApiMethod(name = "likePost", httpMethod = HttpMethod.POST)
-	public Entity likePost(@Named("postId")String postId) throws EntityNotFoundException{
+	public Entity likePost(@Named("postId") String postId) throws EntityNotFoundException{
 
 		// Récupération du post
 		Key postKey = KeyFactory.stringToKey(postId);
@@ -192,18 +192,29 @@ public class ScoreEndpoint {
 		thread = ThreadManager.createThreadForCurrentRequest(new Runnable()  {
 				public void run() {
 					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-						Transaction txn=ds.beginTransaction();
+					Transaction txn = ds.beginTransaction();
 						try {
 							// Récup du like_array et choix aléatoire d'un compteur
-							int randomc=random.nextInt(((ArrayList<Key>) post.getProperty("like_array")).size());
-							Entity c = datastore.get(((ArrayList<Key>) post.getProperty("like_array")).get(randomc));
-							Long v=(Long)c.getProperty("val");
+							int randomc = random.nextInt(((ArrayList<Key>) post.getProperty("like_array")).size());
+							Entity c = ds.get(((ArrayList<Key>) post.getProperty("like_array")).get(randomc));
+							
+							// Un truc du genre : String id_counter = c.key.id pour vraiment récupérer l'id du counter 
+							// qui nous intéresse
+							Key id_counter = c.getKey();
+							Entity counter = datastore.get(id_counter);
+							Long v=(Long)counter.getProperty("val");
+							
+							//Long v=(Long)c.getProperty("val");
+							
 							// UN SLEEP DE CONTENTION
 							Thread.sleep(100);
 							// Incrémentation de la valeur et envoi sur le datastore
-							c.setProperty("val", v+1);
 							
-							ds.put(c);
+							counter.setProperty("val", v+1);
+							//c.setProperty("val", v+1);
+							
+							ds.put(counter);
+							//ds.put(c);
 							txn.commit();
 							
 						} catch (InterruptedException e) {
@@ -232,11 +243,18 @@ public class ScoreEndpoint {
 
 		
 		try {
-			// Count pas encore fait
+			// Count pas encore fait (com de Sylouan)
 			Long count=(long) 0;
-			for (Key e : (ArrayList<Key>) post.getProperty("llike_array")) {
+			for (Key e : (ArrayList<Key>) post.getProperty("like_array")) {
 				//response.getWriter().print((long)datastore.get(e.getKey()).getProperty("val"));
 				//response.getWriter().print(datastore.get(e.getKey()));
+				
+				// Là encore je pense que c'est pas le compteur qui est sélectionné dans e, je pense qu'il faut d'abord
+				// fait un truc du genre id = e.key.id et après un get(id).getProperty("val")
+				Key id_counter2 = e.getKey();
+				Entity counter = datastore.get(id_counter);
+				Long v=(Long)counter.getProperty("val");
+				
 				
 				count+=(long)datastore.get(e).getProperty("val");
 			} 
@@ -248,7 +266,10 @@ public class ScoreEndpoint {
 		}
 		return post;
 
-
+		
+		
 	}
-
+		
+		
 }
+

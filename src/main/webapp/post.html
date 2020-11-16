@@ -117,11 +117,14 @@ var PostView = {
 	    MyPost.list.map(function(item) {
 	      return m("tr", [
             m("td", m("button", {onclick: function(e) {
-				return m.request({
-					method: "POST",
-					url: "_ah/api/myApi/v1/likePost",
-					params: item.key.id
-				})
+            	
+            	console.log("hello"+item.properties.like_array)
+				
+            	//return m.request({
+				//	method: "POST",
+				//	url: "_ah/api/myApi/v1/likePost",
+				//	params: item.key.id,
+				//})
                  }},"like")),
                  m("td", m("button", {onclick: function(e) {
      				console.log("del:"+item.key.id)

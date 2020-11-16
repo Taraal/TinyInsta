@@ -1,6 +1,9 @@
 package package_insta;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
@@ -11,12 +14,15 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-
+import com.google.appengine.api.ThreadManager;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -36,8 +42,6 @@ import com.google.appengine.api.datastore.Transaction;
      )
 
 public class ScoreEndpoint {
-	
-
 
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
 	public Entity postMessage(PostMessage pm) {
@@ -48,10 +52,22 @@ public class ScoreEndpoint {
 		e.setProperty("body", pm.body);
 		e.setProperty("likec", 0);
 		e.setProperty("date", new Date());
-
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
-		datastore.put(e);
+		List<Key> mycounter = new ArrayList<>(); 
+		for (int i=0;i<20;i++) {
+			Entity x = new Entity("Count");
+			mycounter.add(x.getKey());
+			x.setProperty("val", 0);
+			datastore.put(x);
+		}
+		
+		e.setProperty("like_array", mycounter);
+		
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+		ds.put(e);
 		txn.commit();
 		return e;
 	}
@@ -159,4 +175,78 @@ public class ScoreEndpoint {
 		txn.commit();
 		return e;
 	}
+
+	@ApiMethod(name = "likePost", httpMethod = HttpMethod.POST)
+	public Entity likePost(@Named("postId")String postId) throws EntityNotFoundException{
+
+		// Récupération du post
+		Key postKey = KeyFactory.stringToKey(postId);
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Entity post = datastore.get(postKey);
+
+		Thread thread = new Thread();
+		Random random = new Random();
+
+		thread = ThreadManager.createThreadForCurrentRequest(new Runnable()  {
+				public void run() {
+					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+						Transaction txn=ds.beginTransaction();
+						try {
+							// Récup du like_array et choix aléatoire d'un compteur
+							int randomc=random.nextInt(((ArrayList<Key>) post.getProperty("like_array")).size());
+							Entity c = datastore.get(((ArrayList<Key>) post.getProperty("like_array")).get(randomc));
+							Long v=(Long)c.getProperty("val");
+							// UN SLEEP DE CONTENTION
+							Thread.sleep(100);
+							// Incrémentation de la valeur et envoi sur le datastore
+							c.setProperty("val", v+1);
+							
+							ds.put(c);
+							txn.commit();
+							
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (EntityNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} finally {
+							if (txn.isActive()) {
+							    txn.rollback();
+							  }
+						}
+					}
+			});
+			thread.start();
+		
+
+		
+			try {
+				thread.join();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		
+		try {
+			// Count pas encore fait
+			Long count=(long) 0;
+			for (Key e : (ArrayList<Key>) post.getProperty("llike_array")) {
+				//response.getWriter().print((long)datastore.get(e.getKey()).getProperty("val"));
+				//response.getWriter().print(datastore.get(e.getKey()));
+				
+				count+=(long)datastore.get(e).getProperty("val");
+			} 
+			
+			//response.getWriter().print("final value:"+count);
+		} catch (EntityNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return post;
+
+
+	}
+
 }

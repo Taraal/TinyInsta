@@ -121,11 +121,12 @@ var PostView = {
             	//console.log("hello"+item.key.id)
 				
             	//ajouterLike(item.key.id)
+            	data = {'idPost':item.key.id}
             	
             	return m.request({
 					method: "POST",
 					url: "_ah/api/myApi/v1/ajouterLike",
-					params: {'idPost':item.key.id},
+					params: data
 				})
                  }},"like")),
                  m("td", m("button", {onclick: function(e) {

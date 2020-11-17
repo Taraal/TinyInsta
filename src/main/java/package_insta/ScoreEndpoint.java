@@ -25,6 +25,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -43,35 +46,38 @@ import com.google.appengine.api.datastore.Transaction;
 
 public class ScoreEndpoint {
 
+	
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
 	public Entity postMessage(PostMessage pm) {
-
-		Entity e = new Entity("Post"); // quelle est la clef ?? non specifié -> clef automatique
-		e.setProperty("owner", pm.owner);
-		e.setProperty("url", pm.url);
-		e.setProperty("body", pm.body);
-		e.setProperty("likec", 0);
-		e.setProperty("date", new Date());
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		List<Key> mycounter = new ArrayList<>(); 
-		for (int i=0;i<20;i++) {
-			Entity x = new Entity("Count");
-			mycounter.add(x.getKey());
-			x.setProperty("val", 0);
-			datastore.put(x);
-		}
 		
-		e.setProperty("like_array", mycounter);
-		
+		//Create the post
+		Entity e = new Entity("Post");
+			e.setProperty("owner", pm.owner);
+			e.setProperty("date", new Date());
+			e.setProperty("url", pm.url);
+			e.setProperty("body", pm.body);
+			e.setProperty("likec", 0);
+			datastore.put(e);
+					
+		Key clePost = datastore.put(e);
+	    Long idPostCree = clePost.getId();
+		    
+	    // Create the like counter
+	    for (int i = 1; i <= 10; i++){
 
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = ds.beginTransaction();
-		ds.put(e);
-		txn.commit();
+	        Entity compteurLikePost = new Entity("GestionCompteur");
+	        compteurLikePost.setProperty("idPost", idPostCree);
+	        compteurLikePost.setProperty("nomSousCompteur", "SC" + i);
+	        compteurLikePost.setProperty("valeurCompteur", 0);
+	        datastore.put(compteurLikePost);
+	    }
+	        
 		return e;
 	}
 
+	
 	@ApiMethod(name = "mypost", httpMethod = HttpMethod.GET)
 	public CollectionResponse<Entity> mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
 
@@ -105,6 +111,7 @@ public class ScoreEndpoint {
 	    
 	}
     
+	
 	@ApiMethod(name = "getPost",
 		   httpMethod = ApiMethod.HttpMethod.GET)
 	public CollectionResponse<Entity> getPost(User user, @Nullable @Named("next") String cursorString)
@@ -177,102 +184,35 @@ public class ScoreEndpoint {
 	}
 
 	
-	// Retourne une erreur 404 quand appelée par post.html, ligne 122
-	@ApiMethod(name = "likePost", httpMethod = HttpMethod.POST)
-	public Entity likePost(@Named("postId") String postId) throws EntityNotFoundException{
+	@ApiMethod(name = "ajouterLike")
+    public Entity ajouterLike(@Named("idPost")String idPost){
 
-		// Récupération du post
-		Key postKey = KeyFactory.stringToKey(postId);
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Entity post = datastore.get(postKey);
+        int nbCompteurs = 10;
+        int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
+        String nomSousCompteurChoisi = "SC" + compteurChoisi;
+        
+        // Conversion de l'id en long pour la suite
+        long idPost2 = Long.parseLong(idPost);
 
-		Thread thread = new Thread();
-		Random random = new Random();
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+        Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
+        CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
 
-		thread = ThreadManager.createThreadForCurrentRequest(new Runnable()  {
-				public void run() {
-					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-					Transaction txn = ds.beginTransaction();
-						try {
-							// Récup du like_array et choix aléatoire d'un compteur
-							int randomc = random.nextInt(((ArrayList<Key>) post.getProperty("like_array")).size());
-							Entity c = ds.get(((ArrayList<Key>) post.getProperty("like_array")).get(randomc));
-							
-							// Un truc du genre : String id_counter = c.key.id pour vraiment récupérer l'id du counter 
-							// qui nous intéresse
-							Key id_counter = c.getKey();
-							Entity counter = datastore.get(id_counter);
-							Long v=(Long)counter.getProperty("val");
-							
-							//Long v=(Long)c.getProperty("val");
-							
-							// UN SLEEP DE CONTENTION
-							Thread.sleep(100);
-							// Incrémentation de la valeur et envoi sur le datastore
-							
-							counter.setProperty("val", v+1);
-							//c.setProperty("val", v+1);
-							
-							ds.put(counter);
-							//ds.put(c);
-							txn.commit();
-							
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (EntityNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} finally {
-							if (txn.isActive()) {
-							    txn.rollback();
-							  }
-						}
-					}
-			});
-			thread.start();
-		
+        Query query = new Query("GestionCompteur").setFilter(filterFus);
 
-		
-			try {
-				thread.join();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+        Entity gestLikesPost = ds.prepare(query).asSingleEntity();
 
-		
-			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-			Transaction txn = ds.beginTransaction();
-			
-		try {
-			// Count pas encore fait (com de Sylouan)
-			Long count=(long) 0;
-			//for (Key e : (ArrayList<Key>) post.getProperty("like_array")) {
-			for (int e = 0; e <= ((ArrayList<Key>) post.getProperty("like_array")).size(); e++) {
-			
-				//response.getWriter().print((long)datastore.get(e.getKey()).getProperty("val"));
-				//response.getWriter().print(datastore.get(e.getKey()));
-				
-				// Là encore je pense que c'est pas le compteur qui est sélectionné dans e, je pense qu'il faut d'abord
-				// fait un truc du genre id = e.key.id et après un get(id).getProperty("val")
-				Entity line = ds.get(((ArrayList<Key>) post.getProperty("like_array")).get(e));
-				Key id_line = line.getKey();
-				Entity counter2 = ds.get(id_line);
-				count+=(Long)counter2.getProperty("val");	
-				System.out.println(count);
-			} 
-			
-			//response.getWriter().print("final value:"+count);
-		} catch (EntityNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return post;
+        Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
+        gestLikesPost.setProperty("valeurCompteur", tmpLike + 1);
 
-		
-		
-	}
+        ds.put(gestLikesPost);
+        
+        System.out.println("coucou ça marche");
+
+        return gestLikesPost;
+
+    }
 		
 		
 }

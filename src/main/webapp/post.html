@@ -118,12 +118,14 @@ var PostView = {
 	      return m("tr", [
             m("td", m("button", {onclick: function(e) {
             	
-            	//console.log("hello"+item.properties.like_array)
+            	//console.log("hello"+item.key.id)
 				
+            	//ajouterLike(item.key.id)
+            	
             	return m.request({
 					method: "POST",
-					url: "_ah/api/myApi/v1/likePost",
-					params: item.key.id,
+					url: "_ah/api/myApi/v1/ajouterLike",
+					params: {'idPost':item.key.id},
 				})
                  }},"like")),
                  m("td", m("button", {onclick: function(e) {
@@ -157,10 +159,6 @@ var Hello = {
    }
 }
 
-console.log("PROUT");
-console.log("PROUT");
-console.log("PROUT");
-console.log("PROUT");
 console.log("PROUT");
 
 m.mount(document.body, Hello)	

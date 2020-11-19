@@ -132,14 +132,15 @@ var PostView = {
             	return m.request({
 					method: "POST",
 					url: "_ah/api/myApi/v1/ajouterLike",
-					params: {"idPost":item.key.id},
+					params: {"idPost":item.key.id, 
+						"id_post":item.properties.id_post},
 				})
 				
 				//return m.request({
 				//	method: "POST",
 				//	url: "_ah/api/myApi/v1/getLikesPost",
 				//	params: {"idPost":item.key.id, 
-				//		"keyPost":keyToString(item.key)},
+				//	"id_post":item.properties.id_post},
 				//})
 								
                  }},"like")),

@@ -1,3 +1,2 @@
-package_insta\PostMessage.class
-package_insta\HelloAppEngine.class
-package_insta\ScoreEndpoint.class
+package_insta/ScoreEndpoint.class
+package_insta/PostMessage.class

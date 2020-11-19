@@ -59,7 +59,8 @@ public class ScoreEndpoint {
 			e.setProperty("date", new Date());
 			e.setProperty("url", pm.url);
 			e.setProperty("body", pm.body);
-			e.setProperty("likec", 0);
+			long like = 0;
+			e.setProperty("likec", like);
 			datastore.put(e);
 					
 		Key clePost = datastore.put(e);
@@ -77,6 +78,66 @@ public class ScoreEndpoint {
 	        
 		return e;
 	}
+	
+	
+	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
+    public void ajouterLike(@Named("idPost") String idPost) {
+
+        int nbCompteurs = 10;
+        int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
+        String nomSousCompteurChoisi = "SC" + compteurChoisi;
+        
+        // Conversion de l'id en long pour la suite
+        long idPost2 = Long.parseLong(idPost);
+
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+        Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
+        CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
+
+        Query query = new Query("GestionCompteur").setFilter(filterFus);
+
+        Entity gestLikesPost = ds.prepare(query).asSingleEntity();
+
+        Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
+        gestLikesPost.setProperty("valeurCompteur", tmpLike + 1);
+
+        ds.put(gestLikesPost);
+        
+    }
+	
+	
+	@ApiMethod(name = "getLikesPost", path = "/myApi/v1/getLikesPost", httpMethod = HttpMethod.POST)
+    public void getLikesPost(@Named("idPost") String idPost, @Named("keyPost") String keyPost){
+
+		// Conversion de l'id en long pour la suite
+        long idPost2 = Long.parseLong(idPost);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Filter filter = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+        Query query = new Query("GestionCompteur").setFilter(filter);
+        PreparedQuery pq = ds.prepare(query);
+        List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+
+        long totalLikesPost = 0;
+
+        for (Entity r : result){
+        	
+            totalLikesPost += (Long)(r.getProperty("valeurCompteur"));
+        }
+        
+        Entity post = null;
+        try {
+			post = ds.get(KeyFactory.stringToKey(keyPost));
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        post.setProperty("likec", totalLikesPost);
+        ds.put(post);
+
+    }
 
 	
 	@ApiMethod(name = "mypost", httpMethod = HttpMethod.GET)
@@ -102,7 +163,7 @@ public class ScoreEndpoint {
 	    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
 	    
 	    if (cursorString != null) {
-		fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+	    	fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
 		}
 	    
 	    QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
@@ -156,64 +217,6 @@ public class ScoreEndpoint {
 
 		return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
 	}
-
-	@ApiMethod(name = "postMsg", httpMethod = HttpMethod.POST)
-	public Entity postMsg(User user, PostMessage pm) throws UnauthorizedException {
-
-		if (user == null) {
-			throw new UnauthorizedException("Invalid credentials");
-		}
-
-		Entity e = new Entity("Post", Long.MAX_VALUE-(new Date()).getTime()+":"+user.getEmail());
-		e.setProperty("owner", user.getEmail());
-		e.setProperty("url", pm.url);
-		e.setProperty("body", pm.body);
-		e.setProperty("likec", 0);
-		e.setProperty("date", new Date());
-
-///		Solution pour pas projeter les listes
-//		Entity pi = new Entity("PostIndex", e.getKey());
-//		HashSet<String> rec=new HashSet<String>();
-//		pi.setProperty("receivers",rec);
-		
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
-		datastore.put(e);
-//		datastore.put(pi);
-		txn.commit();
-		return e;
-	}
-
-	
-	@ApiMethod(name = "ajouterLike")
-    public Entity ajouterLike(@Named("idPost")String idPost){
-
-        int nbCompteurs = 10;
-        int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
-        String nomSousCompteurChoisi = "SC" + compteurChoisi;
-        
-        // Conversion de l'id en long pour la suite
-        long idPost2 = Long.parseLong(idPost);
-
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
-        Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
-        CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
-
-        Query query = new Query("GestionCompteur").setFilter(filterFus);
-
-        Entity gestLikesPost = ds.prepare(query).asSingleEntity();
-
-        Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
-        gestLikesPost.setProperty("valeurCompteur", tmpLike + 1);
-
-        ds.put(gestLikesPost);
-        
-        System.out.println("coucou ça marche");
-
-        return gestLikesPost;
-
-    }
 		
 		
 }

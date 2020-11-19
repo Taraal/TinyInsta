@@ -20,8 +20,11 @@
 
 	<script>	
 
+	
+	
 // for the example
 var me="f1"
+ 
  
 var PostForm = {
 		url:"",
@@ -54,6 +57,8 @@ var PostForm = {
 		    ])
 		  }
 		}
+
+
 
 var MyPost = {
 		list: [],
@@ -101,6 +106,8 @@ var MyPost = {
      	}
 }
 
+
+
 var PostView = {
   oninit: MyPost.loadList,
   view: function() {
@@ -121,16 +128,23 @@ var PostView = {
             	//console.log("hello"+item.key.id)
 				
             	//ajouterLike(item.key.id)
-            	data = {'idPost':item.key.id}
-            	
+            	            	
             	return m.request({
 					method: "POST",
 					url: "_ah/api/myApi/v1/ajouterLike",
-					params: data
+					params: {"idPost":item.key.id},
 				})
+				
+				//return m.request({
+				//	method: "POST",
+				//	url: "_ah/api/myApi/v1/getLikesPost",
+				//	params: {"idPost":item.key.id, 
+				//		"keyPost":keyToString(item.key)},
+				//})
+								
                  }},"like")),
                  m("td", m("button", {onclick: function(e) {
-     				console.log("del:"+item.key.id)
+     				console.log("del:"+keyToString(item.key))
                  }},"del")),
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),
@@ -148,6 +162,8 @@ var PostView = {
   }
 }
 
+
+
 var Hello = {
    view: function() {
    	return m('div', {class:'container'}, [
@@ -159,6 +175,8 @@ var Hello = {
        ])
    }
 }
+
+
 
 console.log("PROUT");
 

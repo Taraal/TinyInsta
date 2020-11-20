@@ -56,18 +56,21 @@ public class ScoreEndpoint {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
 		//Create the post
-		Entity e = new Entity("Post");
-			e.setProperty("id_post", pm.owner + new Date());
-			e.setProperty("owner", pm.owner);
-			e.setProperty("date", new Date());
-			e.setProperty("url", pm.url);
-			e.setProperty("body", pm.body);
-			long like = 0;
-			e.setProperty("likec", like);
-			datastore.put(e);
-					
-		Key clePost = datastore.put(e);
-	    Long idPostCree = clePost.getId();
+				Entity e = new Entity("Post");
+					e.setProperty("id_post", pm.owner + new Date());
+					e.setProperty("owner", pm.owner);
+					e.setProperty("date", new Date());
+					e.setProperty("url", pm.url);
+					e.setProperty("body", pm.body);
+					ArrayList<String> list_likers = new ArrayList<String>();
+					list_likers.add("");
+					e.setProperty("likers", list_likers);
+					long like = 0;
+					e.setProperty("likec", like);
+					datastore.put(e);
+							
+				Key clePost = datastore.put(e);
+			    Long idPostCree = clePost.getId();
 		    
 	    // Create the like counter
 	    for (int i = 1; i <= 10; i++){
@@ -85,59 +88,119 @@ public class ScoreEndpoint {
 	
 	
 	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
-    public void ajouterLike(@Named("idPost") String idPost, @Named("id_post") String id_post) {
+    public void ajouterLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
 
-        int nbCompteurs = 10;
-        int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
-        String nomSousCompteurChoisi = "SC" + compteurChoisi;
-        
-        // Conversion de l'id en long pour la suite
-        long idPost2 = Long.parseLong(idPost);
-
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
-        Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
-        CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
-
-        Query query = new Query("GestionCompteur").setFilter(filterFus);
-
-        Entity gestLikesPost = ds.prepare(query).asSingleEntity();
-
-        Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
-        gestLikesPost.setProperty("valeurCompteur", tmpLike + 1);
-
-        ds.put(gestLikesPost);
-        
-        
-        
-
-		// Conversion de l'id en long pour la suite
-        long idPost3 = Long.parseLong(idPost);
-		
-		DatastoreService ds2 = DatastoreServiceFactory.getDatastoreService();
-        Filter filter = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost3);
-        Query query2 = new Query("GestionCompteur").setFilter(filter);
-        PreparedQuery pq = ds2.prepare(query2);
-        List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
-
-        long totalLikesPost = 0;
-
-        for (Entity r : result){
-        	
-            totalLikesPost += (Long)(r.getProperty("valeurCompteur"));
-        }
-        
-                
-        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);
-        
+		// Sélection du post en question
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);  
         Query query3 = new Query("Post").setFilter(filterPost);
+        Entity post = ds.prepare(query3).asSingleEntity();
+        
+        // Liste des users ayant déjà liké le post
+        List<String> list_likers = (List<String>)post.getProperty("likers");
+        		
+        if (!(list_likers.contains(owner))) {  
+		
+			// Choix random d'un sous-compteur de likes du post
+	        int nbCompteurs = 10;
+	        int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
+	        String nomSousCompteurChoisi = "SC" + compteurChoisi;
+	        	        
+	        // Conversion de l'id en long pour la suite
+	        long idPost2 = Long.parseLong(idPost);
+	
+	        // Sélection du sous-compteur choisi
+	        Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+	        Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
+	        CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
+	        Query query = new Query("GestionCompteur").setFilter(filterFus);
+	        Entity gestLikesPost = ds.prepare(query).asSingleEntity();
+	
+	        // +1 sur sous-compteur choisi
+	        Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
+	        gestLikesPost.setProperty("valeurCompteur", tmpLike + 1);
+	        ds.put(gestLikesPost);
+	
+	        // Sélection de l'ensemble des sous-compteurs du post
+	        Query query2 = new Query("GestionCompteur").setFilter(filterID);
+	        PreparedQuery pq = ds.prepare(query2);
+	        List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+	
+	        long totalLikesPost = 0;
+	
+	        // Somme des sous-compteurs
+	        for (Entity r : result){
+	            totalLikesPost += (Long)(r.getProperty("valeurCompteur"));
+	        }
+	             	
+	        // Actualisation du compteur global de likes
+	        post.setProperty("likec", totalLikesPost);
+	        
+	        // Ajout du user à la liste des likers 
+	        list_likers.add(owner);
+	        post.setProperty("likers", list_likers);
+	        ds.put(post); 
+		}
+		
+    }
+	
+	
+	
+	@ApiMethod(name = "supprimerLike", path = "/myApi/v1/supprimerLike", httpMethod = HttpMethod.POST)
+    public void supprimerLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
 
-        Entity post = ds2.prepare(query3).asSingleEntity();
-
-        post.setProperty("likec", totalLikesPost);
-
-        ds2.put(post);
-
+		// Sélection du post en question
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);  
+        Query query3 = new Query("Post").setFilter(filterPost);
+        Entity post = ds.prepare(query3).asSingleEntity();
+        
+        // Liste des users ayant déjà liké le post
+        List<String> list_likers = (List<String>)post.getProperty("likers");
+        		
+        if (list_likers.contains(owner)) {  
+		
+			// Choix random d'un sous-compteur de likes du post
+	        int nbCompteurs = 10;
+	        int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
+	        String nomSousCompteurChoisi = "SC" + compteurChoisi;
+	        	        
+	        // Conversion de l'id en long pour la suite
+	        long idPost2 = Long.parseLong(idPost);
+	
+	        // Sélection du sous-compteur choisi
+	        Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+	        Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
+	        CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
+	        Query query = new Query("GestionCompteur").setFilter(filterFus);
+	        Entity gestLikesPost = ds.prepare(query).asSingleEntity();
+	
+	        // -1 sur sous-compteur choisi
+	        Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
+	        gestLikesPost.setProperty("valeurCompteur", tmpLike - 1);
+	        ds.put(gestLikesPost);
+	
+	        // Sélection de l'ensemble des sous-compteurs du post
+	        Query query2 = new Query("GestionCompteur").setFilter(filterID);
+	        PreparedQuery pq = ds.prepare(query2);
+	        List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+	
+	        long totalLikesPost = 0;
+	
+	        // Somme des sous-compteurs
+	        for (Entity r : result){
+	            totalLikesPost += (Long)(r.getProperty("valeurCompteur"));
+	        }
+	             	
+	        // Actualisation du compteur global de likes
+	        post.setProperty("likec", totalLikesPost);
+	        
+	        // Ajout du user à la liste des likers 
+	        System.out.println(list_likers.remove(owner));
+	        post.setProperty("likers", list_likers);
+	        ds.put(post); 
+		}
+		
     }
 
 	

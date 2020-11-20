@@ -170,28 +170,29 @@ var PostView = {
 	      m('th', {width:"50px"}, "Like"),
 	    ]),
 	    MyPost.list.map(function(item) {
-	      return m("tr", [
-            m("td", m("button", {onclick: function(e) {
-            	
-            	//console.log("hello"+item.key.id)
-				
-            	//ajouterLike(item.key.id)
-            	            	
-            	return m.request({
-					method: "POST",
-					url: "_ah/api/myApi/v1/ajouterLike",
-					params: {"idPost":item.key.id, 
-						"id_post":item.properties.id_post},
-				})
-				
-				//return m.request({
-				//	method: "POST",
-				//	url: "_ah/api/myApi/v1/getLikesPost",
-				//	params: {"idPost":item.key.id, 
-				//	"id_post":item.properties.id_post},
-				//})
-								
-                 }},"like")),
+		      return m("tr", [
+	            m("td", m("button", {onclick: function(e) {
+					// +1 like au clic si pas déjà liké            	            	
+	            	return m.request({
+						method: "POST",
+						url: "_ah/api/myApi/v1/ajouterLike",
+						params: {"idPost":item.key.id, 
+							"id_post":item.properties.id_post, 
+							"owner":me},
+					})
+	                 }},"like")),
+	                 
+	            m("td", m("button", {onclick: function(e) {
+	           	// -1 like au clic si déjà liké            	            	
+	            	return m.request({
+						method: "POST",
+						url: "_ah/api/myApi/v1/supprimerLike",
+						params: {"idPost":item.key.id, 
+							"id_post":item.properties.id_post, 
+							"owner":me},
+	     				})
+	                  }},"dislike")),
+	                  
                  m("td", m("button", {onclick: function(e) {
      				console.log("del:"+keyToString(item.key))
                  }},"del")),

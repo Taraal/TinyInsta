@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <title>Post Example</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-signin-scope" content="profile email">
 <meta name="google-signin-client_id" content="17241782294-ltp2t4hida9csuvq6513nlq57addkuqe.apps.googleusercontent.com">
-<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script> -->
 
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
@@ -20,10 +21,10 @@
 </head>
 <body>
 
-	<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+	<!--  <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
   	
-  	<!-- Lien dégueulasse pour se log out -->
-  	<a href="#" onclick="signOut();">Sign out</a>
+  	
+  	<a href="#" onclick="signOut();">Sign out</a>-->
 	
 	
 <script>
@@ -50,6 +51,7 @@ function getSession() {
 	var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
+        	//Variable de session avec le name de l'user conncté
             var data = xhr.responseText;
             console.log(data);
             
@@ -210,12 +212,14 @@ var PostView = {
 }
 
 
-
 var Hello = {
    view: function() {
    	return m('div', {class:'container'}, [
-           m("h1", {class: 'title'}, 'The TinyGram Post'),
+   		
+           m("h1", {class: 'title'}, 'TinyGram'),
+           
            m('div',{class: 'tile is-ancestor'},[
+        	   
                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PostForm))),
         	   m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PostView))),
            ])
@@ -225,7 +229,6 @@ var Hello = {
 
 
 
-console.log("PROUT");
 
 m.mount(document.body, Hello)	
 

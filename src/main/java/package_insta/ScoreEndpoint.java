@@ -51,12 +51,17 @@ public class ScoreEndpoint {
 	
 	
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
-	public Entity postMessage(PostMessage pm) {
+	public Entity postMessage(PostMessage pm, String email) {
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
+		Query q = new Query("User").setFilter(new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, email));
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+		Entity authorUser = result.get(0);
+		
 		//Create the post
-		Entity e = new Entity("Post");
+		Entity e = new Entity("Post", authorUser.getKey());
 			e.setProperty("id_post", pm.owner + new Date());
 			e.setProperty("owner", pm.owner);
 			e.setProperty("date", new Date());

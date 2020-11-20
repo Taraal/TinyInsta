@@ -180,6 +180,9 @@ var PostView = {
 					url: "_ah/api/myApi/v1/ajouterLike",
 					params: {"idPost":item.key.id, 
 						"id_post":item.properties.id_post},
+
+				}).then(function(result){
+					console.log("fonction passée")
 				})
 				
 				//return m.request({

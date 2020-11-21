@@ -35,19 +35,25 @@ function fetchEmail(){
 var me = ""
 
 var SearchBox = {
-		search:"",
-		  view: function() {
-		    return m("form", {
-		      onsubmit: function(e) {
-		        e.preventDefault()
-		        follow()
-		      }}, 
-		      [
-		    	  m('div',{class:'control'},m("button[type=submit]", {class:'button is-link'},"Follow"))
-		    ])
-		  }
-
-}
+			search:"",
+			  view: function() {
+			    return m("form", {
+			      onsubmit: function(e) {
+			        e.preventDefault()
+			        MyPost.postMessage()
+			      }}, 
+			      [
+			    	m('div', {class:'field'},[
+			         m("label", {class:'label'},"Search for someone"),
+			         m('div',{class:'control'}, m("input[type=text]", {
+			          class:'input is-rounded',
+			          placeholder:"Someone, something, somewhere...",
+			             oninput: function(e) {PostForm.url = e.target.value}})),
+			        ]),
+		    	  m('div',{class:'control'},m("button[type=submit]", {class:'button is-link'},"Test Follow"))
+			    ])
+			  }
+			}
 
 function follow(){
 	m.request({

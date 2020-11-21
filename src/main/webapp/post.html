@@ -110,9 +110,7 @@ var MyPost = {
 	    next: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+ getSession(function(){
-	            	return this.responseText;
-	            }) +"?next="+MyPost.nextToken})
+	            url: "_ah/api/myApi/v1/mypost/"+ me +"?next="+MyPost.nextToken})
 	        .then(function(result) {
 	        	console.log("got:",result)
 	        	result.items.map(function(item){MyPost.list.push(item)})
@@ -175,11 +173,14 @@ var PostView = {
 						url: "_ah/api/myApi/v1/supprimerLike",
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
-							"owner":getEmail()},
+							"owner":me},
 	     				})
 	                  }},"dislike")),
                  m("td", m("button", {onclick: function(e) {
-     				console.log("del:"+typeof(item.properties.id_post)+typeof(item.properties.date))
+                	 return m.request({
+ 						method: "POST",
+ 						url: "_ah/api/myApi/v1/NewPosts",
+ 	     				})
                  }},"del")),
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),

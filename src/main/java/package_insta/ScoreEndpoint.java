@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -61,9 +62,10 @@ public class ScoreEndpoint {
 		
 		Entity e = new Entity("Post");
 		
-			// On crée un écart de temps entre notre post et une date lointaine (an 2300 ici). Ainsi, plus notre post est 
-			// récent, plus cet écart est faible. En basant nos requêtes sur cet écart de temps, les posts les plus 
-			// récents sont donc analysés les premiers, ce qui nous permet de ressortir d'abord les posts les plus récents 
+			// On calcule l'écart temporel entre notre post et une date lointaine fixe (an 2300 ici). Ainsi, plus notre 
+			// post est récent, plus cet écart est faible. En basant nos requêtes sur cet écart de temps, les posts les 
+			// plus récents sont donc analysés les premiers, ce qui nous permet de ressortir d'abord les posts les plus 
+			// récents 
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			String dateInString = "2300-01-01 00:00:00.000";
 			Date date = format.parse(dateInString);
@@ -214,7 +216,7 @@ public class ScoreEndpoint {
 	        post.setProperty("likec", totalLikesPost);
 	        
 	        // Ajout du user à la liste des likers 
-	        System.out.println(list_likers.remove(owner));
+	        list_likers.remove(owner);
 	        post.setProperty("likers", list_likers);
 	        ds.put(post); 
 		}
@@ -303,6 +305,140 @@ public class ScoreEndpoint {
 
 		return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
 	}
+	
+	
+
+	// On crée 300 users : 200 se follow entre-eux, 50 autres se follows aussi entre-eux, et les 50 derniers ne follow
+	// et ne sont follow par personne. 
+	@ApiMethod(name = "NewUsers", httpMethod = HttpMethod.POST)
+	public void NewUsers() {
+
+		// Create 200 users who follow each other
+		for (int i = 0; i < 200; i++) {
+			Entity e = new Entity("User");
+			e.setProperty("email", "f" + i + "@univ_chambery.fr");
+			//ArrayList<String> empty_L = new ArrayList<String>();
+			//empty_L.add("");
+			//e.setProperty("followers", empty_L);
+			//e.setProperty("follows", empty_L);			
+			e.setProperty("nom", "last" + i);
+			e.setProperty("prenom", "first" + i);
+			e.setProperty("userName", "first" + i + " " + "last" + i);
+
+			// Create followers and follows
+			ArrayList<String> fset = new ArrayList<String>();
+			fset.add("");
+			for (int j = 0; j < 200; j++) {
+				fset.add("first" + j + " " + "last" + j);
+			}
+			fset.remove("first" + i + " " + "last" + i);
+			e.setProperty("followers", fset);
+			e.setProperty("follows", fset);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			datastore.put(e);
+		}
 		
+		// Create 50 users who follow each other
+		for (int i = 200; i < 250; i++) {
+			Entity e = new Entity("User", "f" + i);
+			e.setProperty("email", "f" + i + "@univ_caen.fr");
+			//ArrayList<String> empty_L = new ArrayList<String>();
+			//empty_L.add("");
+			//e.setProperty("followers", empty_L);
+			//e.setProperty("follows", empty_L);			
+			e.setProperty("nom", "last" + i);
+			e.setProperty("prenom", "first" + i);
+			e.setProperty("userName", "first" + i + " " + "last" + i);
+
+			// Create followers and follows
+			ArrayList<String> fset = new ArrayList<String>();
+			fset.add("");
+			for (int j = 200; j < 250; j++) {
+				fset.add("first" + j + " " + "last" + j);
+			}
+			fset.remove("first" + i + " " + "last" + i);
+			e.setProperty("followers", fset);
+			e.setProperty("follows", fset);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			datastore.put(e);
+		}
 		
+		// Create 50 lonely users, life can be hard
+		for (int i = 250; i < 300; i++) {
+			Entity e = new Entity("User", "f" + i);
+			e.setProperty("email", "f" + i + "@univ_perpignan.fr");
+			//ArrayList<String> empty_L = new ArrayList<String>();
+			//empty_L.add("");
+			//e.setProperty("followers", empty_L);
+			//e.setProperty("follows", empty_L);			
+			e.setProperty("nom", "last" + i);
+			e.setProperty("prenom", "first" + i);
+			e.setProperty("userName", "first" + i + " " + "last" + i);
+
+			// Create 0 followers and 0 follows (sad reacts only)
+			ArrayList<String> fset = new ArrayList<String>();
+			fset.add("");
+			e.setProperty("followers", fset);
+			e.setProperty("follows", fset);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			datastore.put(e);
+		}		
+	}
+	
+	
+	
+	// On crée 300 posts, un pour chacun de nos 300 users fictifs. Pour cela, on reprend exactement le même code que 
+	// pour la fonction de création de post
+	@ApiMethod(name = "NewPosts", httpMethod = HttpMethod.POST)
+	public void NewPosts() throws ParseException {
+		for (int i = 0; i < 300; i++) {
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Entity e = new Entity("Post");
+		
+			// On calcule l'écart temporel entre notre post et une date lointaine fixe (an 2300 ici). Ainsi, plus notre 
+			// post est récent, plus cet écart est faible. En basant nos requêtes sur cet écart de temps, les posts les 
+			// plus récents sont donc analysés les premiers, ce qui nous permet de ressortir d'abord les posts les plus 
+			// récents 
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			String dateInString = "2300-01-01 00:00:00.000";
+			Date date = format.parse(dateInString);
+			Date date_today = new Date();
+			
+			String date_post = String.valueOf(date.getTime()-date_today.getTime());
+			while (date_post.length()<15) {
+				date_post = "0"+date_post;
+			}
+			
+			// Propriétés de chaque post
+			e.setProperty("id_post", date_post + " - " + "first" + i + " " + "last" + i);
+			e.setProperty("owner", "first" + i + " " + "last" + i);
+			e.setProperty("date", new Date());
+			e.setProperty("url", "http://placehold.it/120x120&text=image" + i);
+			e.setProperty("body", "Hi, my name is first" + i + ", I like potatoes.");
+			ArrayList<String> list_likers = new ArrayList<String>();
+			list_likers.add("");
+			e.setProperty("likers", list_likers);
+			long like = 0;
+			e.setProperty("likec", like);
+			datastore.put(e);
+					
+		Key clePost = datastore.put(e);
+	    Long idPostCree = clePost.getId();
+		    
+	    // Create the like counter
+	    for (int j = 1; j <= 10; j++){
+
+	        Entity compteurLikePost = new Entity("GestionCompteur");
+	        compteurLikePost.setProperty("idPost", idPostCree);
+	        compteurLikePost.setProperty("nomSousCompteur", "SC" + i);
+	        compteurLikePost.setProperty("valeurCompteur", 0);
+	        datastore.put(compteurLikePost);
+	    }
+		}
+	}
 }

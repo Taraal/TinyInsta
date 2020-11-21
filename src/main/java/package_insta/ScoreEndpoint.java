@@ -227,6 +227,8 @@ public class ScoreEndpoint {
 	public CollectionResponse<Entity> mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
 
 	    Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
+	    //text.substring(67, text.length() - 1));
+	    
 
 	    // https://cloud.google.com/appengine/docs/standard/python/datastore/projectionqueries#Indexes_for_projections
 	    //q.addProjection(new PropertyProjection("body", String.class));

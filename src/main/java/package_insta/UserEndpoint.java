@@ -88,7 +88,7 @@ public class UserEndpoint {
 	 * @return boolean : True if successful, False otherwise
 	 */
 	@ApiMethod(name= "follow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.PUT)
-	public boolean follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
+	public void follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
 		
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);
@@ -108,12 +108,10 @@ public class UserEndpoint {
 		
 		txn.commit();
 		
-		return true;
-		
 	}
 	
 	@ApiMethod(name = "unfollow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.DELETE)
-	public boolean unfollow(@Named("emailA") String emailA, @Named("userB") String emailB) {
+	public void unfollow(@Named("emailA") String emailA, @Named("userB") String emailB) {
 	
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);
@@ -133,7 +131,5 @@ public class UserEndpoint {
 		
 		txn.commit();
 		
-		
-		return true;
 	}
 }

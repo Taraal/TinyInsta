@@ -284,4 +284,91 @@ public class ScoreEndpoint {
 	}
 		
 		
+	/* Finds a user in the datastore by its email
+	 * Crappy method as it fails if the result is null 
+	 * TODO : try/catch the null result, return null if no user is found 
+	 * 
+	 * @param email : email of the requested user
+	 * @return Entity : the requested user
+	 */
+	static public Entity getUserByEmail(@Named("email") String email) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+		
+		Entity user = result.get(0);
+		return user;
+	}
+	
+	@ApiMethod(name = "getUser", path = "user/{email}", httpMethod = HttpMethod.GET)
+	public Object getUser(@Named("email") String email) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+		
+		Entity user = new Entity("User");
+		user.setProperty("key", result.get(0).getProperty("key"));
+		user.setProperty("email", result.get(0).getProperty("email"));
+		return user;
+	}
+	
+	/* Makes userA follow userB
+	 * @param emailA : email property of userA
+	 * @param emailB : email property of userB
+	 * @return boolean : True if successful, False otherwise
+	 */
+	@ApiMethod(name= "follow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.PUT)
+	public void follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
+		
+		Entity userA = getUserByEmail(emailA);
+		Entity userB = getUserByEmail(emailB);
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
+		
+		ArrayList<String> follows = (ArrayList<String>)userA.getProperty("follows");
+		follows.add(emailB);
+		userA.setProperty("follows", follows);
+		datastore.put(userA);
+		
+		ArrayList<String> followers = (ArrayList<String>) userB.getProperty("followers");
+		followers.add(emailA);
+		userB.setProperty("followers", followers);
+		datastore.put(userB);
+		
+		txn.commit();
+		
+	}
+	
+	@ApiMethod(name = "unfollow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.DELETE)
+	public void unfollow(@Named("emailA") String emailA, @Named("userB") String emailB) {
+	
+		Entity userA = getUserByEmail(emailA);
+		Entity userB = getUserByEmail(emailB);
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
+		
+		ArrayList<String> follows = (ArrayList<String>)userA.getProperty("follows");
+		follows.remove(emailB);
+		userA.setProperty("follows", follows);
+		datastore.put(userA);
+		
+		ArrayList<String> followers = (ArrayList<String>) userB.getProperty("followers");
+		followers.remove(emailA);
+		userB.setProperty("followers", followers);
+		datastore.put(userB);
+		
+		txn.commit();
+		
+	}
+
+	
+	
 }

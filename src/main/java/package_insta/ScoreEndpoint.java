@@ -59,38 +59,22 @@ public class ScoreEndpoint {
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
 		Entity authorUser = result.get(0);
-		
-		//Create the post
-<<<<<<< HEAD
-				Entity e = new Entity("Post");
-					e.setProperty("id_post", pm.owner + new Date());
-					e.setProperty("owner", pm.owner);
-					e.setProperty("date", new Date());
-					e.setProperty("url", pm.url);
-					e.setProperty("body", pm.body);
-					ArrayList<String> list_likers = new ArrayList<String>();
-					list_likers.add("");
-					e.setProperty("likers", list_likers);
-					long like = 0;
-					e.setProperty("likec", like);
-					datastore.put(e);
-							
-				Key clePost = datastore.put(e);
-			    Long idPostCree = clePost.getId();
-=======
+
 		Entity e = new Entity("Post", authorUser.getKey());
 			e.setProperty("id_post", pm.owner + new Date());
 			e.setProperty("owner", pm.owner);
 			e.setProperty("date", new Date());
 			e.setProperty("url", pm.url);
 			e.setProperty("body", pm.body);
+			ArrayList<String> list_likers = new ArrayList<String>();
+			list_likers.add("");
+			e.setProperty("likers", list_likers);
 			long like = 0;
 			e.setProperty("likec", like);
 			datastore.put(e);
 					
 		Key clePost = datastore.put(e);
 	    Long idPostCree = clePost.getId();
->>>>>>> Follows
 		    
 	    // Create the like counter
 	    for (int i = 1; i <= 10; i++){

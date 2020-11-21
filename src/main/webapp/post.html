@@ -162,7 +162,8 @@ var MyPost = {
  	    postMessage: function() {
  			var data={'owner':me,
  					'url':PostForm.url,
- 					'body':PostForm.body}
+ 					'body':PostForm.body,
+ 					'email': "test@gmail.com"}
  	    	console.log("post:"+data)
      		return m.request({
          		method: "POST",

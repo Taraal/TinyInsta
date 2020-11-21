@@ -48,7 +48,13 @@ import com.google.appengine.api.datastore.Transaction;
 
 public class UserEndpoint {
 
-	// Trying to DRY this class --- doesn't work (yet)
+	/* Finds a user in the datastore by its email
+	 * Crappy method as it fails if the result is null 
+	 * TODO : try/catch the null result, return null if no user is found 
+	 * 
+	 * @param email : email of the requested user
+	 * @return Entity : the requested user
+	 */
 	static public Entity getUserByEmail(@Named("email") String email) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
@@ -58,32 +64,6 @@ public class UserEndpoint {
 		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
 		
 		Entity user = result.get(0);
-		return user;
-	}
-	
-	@ApiMethod(name = "register", path = "register", httpMethod = HttpMethod.POST)
-	public Entity register(@Named("email") String email) {
-		
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		
-		Transaction txn = datastore.beginTransaction();
-	
-		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
-		
-		PreparedQuery pq = datastore.prepare(q);
-		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
-		if (result != null && result.size() > 0){
-			return null;
-		}
-		
-		Entity user = new Entity("User");
-		user.setProperty("email", email);
-		user.setProperty("followers", new ArrayList<String>());
-		user.setProperty("follows", new ArrayList<String>());
-		
-		datastore.put(user);
-		
-		txn.commit();
 		return user;
 	}
 	
@@ -156,6 +136,4 @@ public class UserEndpoint {
 		
 		return true;
 	}
-
-	
 }

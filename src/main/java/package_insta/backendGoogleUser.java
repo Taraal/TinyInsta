@@ -83,14 +83,14 @@ public class backendGoogleUser extends HttpServlet {
 	    			e.setProperty("email", email);
 	    			datastore.put(e);
 	    			
-	    			req.getSession().setAttribute("username", prenom);
+	    			req.getSession().setAttribute("email", email);
 		            resp.sendRedirect(req.getContextPath() + "/post.html");
 	    		}
 	    		
 	    		//User does exist 
 	    		else {
 	    			
-	    			req.getSession().setAttribute("username", prenom);
+	    			req.getSession().setAttribute("email", email);
 		            resp.sendRedirect(req.getContextPath() + "/post.html");
 	    		}
 	            

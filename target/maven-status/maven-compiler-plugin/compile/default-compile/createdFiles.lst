@@ -1,3 +1,6 @@
-package_insta\PostMessage.class
-package_insta\HelloAppEngine.class
-package_insta\ScoreEndpoint.class
+package_insta/IdTokenVerifier.class
+package_insta/HelloAppEngine.class
+package_insta/ScoreEndpoint.class
+package_insta/PostMessage.class
+package_insta/backendGoogleUser.class
+package_insta/getSession.class

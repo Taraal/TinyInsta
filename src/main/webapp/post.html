@@ -46,19 +46,20 @@
 <script>	
 
 //On recup de nom d'user de la session
-function getSession() {
+function getSession(callback) {
 	
 	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/getSession', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
         	//Variable de session avec le name de l'user conncté
             var data = xhr.responseText;
-            console.log(data);
+        	callback.apply(xhr);
             
         }
     }
-    xhr.open('GET', '/getSession', true);
-    xhr.send(null);
+    xhr.send();
+
 }
 
 
@@ -72,8 +73,16 @@ function getSession() {
 
 getSession();*/
 
-var me = "f1"
+var me = getSession(function(){
+	console.log(this.responseText);
+	return this.responseText;
+})
 
+function getEmail(){
+	return getSession(function(){
+		return this.responseText;
+	});
+}
 
 var SearchBox = {
 		search:"",
@@ -134,9 +143,10 @@ var MyPost = {
 		list: [],
 	    nextToken: "",
 	    loadList: function() {
+	    	console.log("load : ", getEmail());
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+me})
+	            url: "_ah/api/myApi/v1/mypost/"+getEmail()})
 	        .then(function(result) {
 	        	console.log("got:",result)
 	        	MyPost.list=result.items
@@ -160,10 +170,9 @@ var MyPost = {
 	            }})
 	    },
  	    postMessage: function() {
- 			var data={'owner':me,
+ 			var data={'owner':getEmail(),
  					'url':PostForm.url,
- 					'body':PostForm.body,
- 					'email': "test@gmail.com"}
+ 					'body':PostForm.body}
  	    	console.log("post:"+data)
      		return m.request({
          		method: "POST",
@@ -202,7 +211,7 @@ var PostView = {
 						url: "_ah/api/myApi/v1/ajouterLike",
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
-							"owner":me},
+							"owner":getEmail()},
 					})
 	                 }},"like")),
 	                 
@@ -213,7 +222,7 @@ var PostView = {
 						url: "_ah/api/myApi/v1/supprimerLike",
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
-							"owner":me},
+							"owner":getEmail()},
 	     				})
 	                  }},"dislike")),
                  m("td", m("button", {onclick: function(e) {

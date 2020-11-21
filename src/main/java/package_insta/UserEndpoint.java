@@ -78,7 +78,7 @@ public class UserEndpoint {
 		
 		Entity user = new Entity("User");
 		user.setProperty("key", result.get(0).getProperty("key"));
-		user.setProperty("email", result.get(0).getProperty("email"));		
+		user.setProperty("email", result.get(0).getProperty("email"));
 		return user;
 	}
 	

@@ -63,7 +63,10 @@ var mySearch = {
              	params: {"inputBar":SearchBox.search},
          	})
   	    	.then(function(result) {
-     	 			console.log("result from getUSerByName : ",result)
+	  	    		for (i = 0; i < result.items.length; i++) {
+	  	    			console.log(result.items[i].properties.userName)
+	  	    		} 
+     	 			
      	 			
          	 	})
      	}

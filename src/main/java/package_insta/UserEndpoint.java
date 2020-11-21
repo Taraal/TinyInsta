@@ -84,24 +84,7 @@ public class UserEndpoint {
 	}
 	
 	
-	@ApiMethod(name = "getUserByName", path = "/myApi/v1/getUserByName", httpMethod = HttpMethod.GET)
-    public Object getUserByName(@Named("inputBar") String inputBar) {
-
-		/*String regex = "[!._,'@? ]";
-		StringTokenizer str = new StringTokenizer(inputBar,regex);
-		
-		System.out.println(inputBar);
-		
-		while(str.hasMoreTokens()) {
-	         System.out.println(str.nextToken());
-	    }*/
-		
-		
-		Entity user = new Entity("User");
-		user.setProperty("email","test");
-		
-		return user;
-    }
+	
 	
 	
 	

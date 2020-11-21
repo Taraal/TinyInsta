@@ -45,22 +45,6 @@
 		
 <script>	
 
-//On recup de nom d'user de la session
-function getSession(callback) {
-	
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/getSession', true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-        	//Variable de session avec le name de l'user conncté
-            var data = xhr.responseText;
-        	callback.apply(xhr);
-            
-        }
-    }
-    xhr.send();
-}
-
 function fetchEmail(){
 	console.log("lol");
 	fetch('/getSession')
@@ -126,7 +110,7 @@ var PostForm = {
 		}
 
 
-
+// TODO : Rendre loadList async pour récup les posts dès le début 
 var MyPost = {
 		oninit: fetchEmail(), 
 		list: [],

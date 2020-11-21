@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
@@ -81,6 +82,28 @@ public class UserEndpoint {
 		user.setProperty("email", result.get(0).getProperty("email"));
 		return user;
 	}
+	
+	
+	@ApiMethod(name = "getUserByName", path = "/myApi/v1/getUserByName", httpMethod = HttpMethod.GET)
+    public Object getUserByName(@Named("inputBar") String inputBar) {
+
+		/*String regex = "[!._,'@? ]";
+		StringTokenizer str = new StringTokenizer(inputBar,regex);
+		
+		System.out.println(inputBar);
+		
+		while(str.hasMoreTokens()) {
+	         System.out.println(str.nextToken());
+	    }*/
+		
+		
+		Entity user = new Entity("User");
+		user.setProperty("email","test");
+		
+		return user;
+    }
+	
+	
 	
 	/* Makes userA follow userB
 	 * @param emailA : email property of userA

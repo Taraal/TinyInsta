@@ -23,8 +23,11 @@
         var id_token = googleUser.getAuthResponse().id_token;
         //console.log("ID Token: " + id_token);
 
-        var redirectUrl = 'https://tinyinsta-295119.appspot.com/checkGoogleUser';
+		//Redirect on GAE
+        //var redirectUrl = 'https://tinyinsta-295119.appspot.com/checkGoogleUser';
 
+		//Redirect on localhost
+        var redirectUrl = 'checkGoogleUser';
         var form = $('<form action="' + redirectUrl + '" method="post">' +
                          '<input type="text" name="id_token" value="' +
                           id_token + '" />' +

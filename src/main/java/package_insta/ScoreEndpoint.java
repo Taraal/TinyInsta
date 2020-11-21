@@ -32,6 +32,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 
 @Api(name = "myApi",
      version = "v1",
@@ -298,7 +299,7 @@ public class ScoreEndpoint {
 		PreparedQuery pq = datastore.prepare(q);
 		
 		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
-		
+		System.out.println(result);
 		Entity user = result.get(0);
 		return user;
 	}
@@ -323,31 +324,35 @@ public class ScoreEndpoint {
 	 * @param emailB : email property of userB
 	 * @return boolean : True if successful, False otherwise
 	 */
-	@ApiMethod(name= "follow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.PUT)
+	@ApiMethod(name= "follow", path = "follow/{emailA}/{emailB}", httpMethod = HttpMethod.PUT)
 	public void follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
 		
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
+		TransactionOptions options = TransactionOptions.Builder.withXG(true);
+		Transaction txn = datastore.beginTransaction(options);
 		
 		ArrayList<String> follows = (ArrayList<String>)userA.getProperty("follows");
-		follows.add(emailB);
-		userA.setProperty("follows", follows);
-		datastore.put(userA);
+		if (!follows.contains(emailB)) {
+			follows.add(emailB);
+			userA.setProperty("follows", follows);
+			datastore.put(userA);
+		}
 		
 		ArrayList<String> followers = (ArrayList<String>) userB.getProperty("followers");
-		followers.add(emailA);
-		userB.setProperty("followers", followers);
-		datastore.put(userB);
-		
+		if (!followers.contains(emailA)) {
+			followers.add(emailA);
+			userB.setProperty("followers", followers);
+			datastore.put(userB);
+		}
 		txn.commit();
 		
 	}
 	
 	@ApiMethod(name = "unfollow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.DELETE)
-	public void unfollow(@Named("emailA") String emailA, @Named("userB") String emailB) {
+	public void unfollow(@Named("userA") String emailA, @Named("userB") String emailB) {
 	
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);

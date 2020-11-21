@@ -55,7 +55,7 @@ function follow(){
 		url: "_ah/api/myApi/v1/follow/:follower/:clem",
 		params:{
 			follower: "sylouan.corfa@gmail.com",
-			clem: "clemment.picard.44@gmail.com"
+			clem: "t4raal@gmail.com"
 		}
 	});
 }
@@ -115,9 +115,7 @@ var MyPost = {
 	    next: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+ getSession(function(){
-	            	return this.responseText;
-	            }) +"?next="+MyPost.nextToken})
+	            url: "_ah/api/myApi/v1/mypost/"+me+"?next="+MyPost.nextToken})
 	        .then(function(result) {
 	        	console.log("got:",result)
 	        	result.items.map(function(item){MyPost.list.push(item)})

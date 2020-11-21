@@ -74,6 +74,11 @@ public class backendGoogleUser extends HttpServlet {
 	    		PreparedQuery pq = datastore.prepare(q);
 	    		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
 	    		
+	    		ArrayList<String> followers = new ArrayList<String>();
+	    		ArrayList<String> follows = new ArrayList<String>();
+	    		followers.add("");
+	    		follows.add("");
+	    		
 	    		//User doesn't exist in db -> add it to db
 	    		if(result.isEmpty()) {
 	    			Entity e = new Entity("User");
@@ -81,8 +86,8 @@ public class backendGoogleUser extends HttpServlet {
 	    			e.setProperty("nom", nom);
 	    			e.setProperty("prenom", prenom);
 	    			e.setProperty("email", email);
-					e.setProperty("followers", new ArrayList<String>());
-					e.setProperty("follows", new ArrayList<String>());
+					e.setProperty("followers", followers);
+					e.setProperty("follows", follows);
 	    			datastore.put(e);
 	    			
 	    			req.getSession().setAttribute("email", email);

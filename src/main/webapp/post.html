@@ -177,17 +177,16 @@ var PostView = {
 	     				})
 	                  }},"dislike")),
                  m("td", m("button", {onclick: function(e) {
-                	 return m.request({
- 						method: "POST",
- 						url: "_ah/api/myApi/v1/NewPosts",
- 	     				})
+                	 //return m.request({
+ 					//	method: "POST",
+ 					//	url: "_ah/api/myApi/v1/NewPosts",
+ 	     			//	})
                  }},"del")),
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),
 	        m('td', m('label', item.properties.likec)),
 
-            m("td", m("button", {onclick: function(e) {
-				// +1 like au clic si pas déjà liké            	            	
+            m("td", m("button", {onclick: function(e) {         	            	
             	return m.request({
 					method: "PUT",
 					url: "_ah/api/myApi/v1/follow/"+me+"/"+item.properties.owner,

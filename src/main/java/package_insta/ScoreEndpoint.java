@@ -1,5 +1,7 @@
 package package_insta;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +34,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.repackaged.com.google.protobuf.Duration;
+import com.google.appengine.repackaged.org.joda.time.Interval;
 
 @Api(name = "myApi",
      version = "v1",
@@ -51,12 +55,27 @@ public class ScoreEndpoint {
 	
 	
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
-	public Entity postMessage(PostMessage pm) {
+	public Entity postMessage(PostMessage pm) throws ParseException {
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
 		Entity e = new Entity("Post");
-			e.setProperty("id_post", pm.owner + new Date());
+		
+			// On crée un écart de temps entre notre post et une date lointaine (an 2300 ici). Ainsi, plus notre post est 
+			// récent, plus cet écart est faible. En basant nos requêtes sur cet écart de temps, les posts les plus 
+			// récents sont donc analysés les premiers, ce qui nous permet de ressortir d'abord les posts les plus récents 
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			String dateInString = "2300-01-01 00:00:00.000";
+			Date date = format.parse(dateInString);
+			Date date_today = new Date();
+			
+			String date_post = String.valueOf(date.getTime()-date_today.getTime());
+			while (date_post.length()<15) {
+				date_post = "0"+date_post;
+			}
+			
+			// Propriétés de chaque post
+			e.setProperty("id_post", date_post + " - " + pm.owner);
 			e.setProperty("owner", pm.owner);
 			e.setProperty("date", new Date());
 			e.setProperty("url", pm.url);

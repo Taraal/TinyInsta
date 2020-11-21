@@ -179,7 +179,7 @@ var PostView = {
 	     				})
 	                  }},"dislike")),
                  m("td", m("button", {onclick: function(e) {
-     				console.log("del:"+keyToString(item.key))
+     				console.log("del:"+typeof(item.properties.id_post)+typeof(item.properties.date))
                  }},"del")),
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),

@@ -59,30 +59,18 @@ function getSession(callback) {
         }
     }
     xhr.send();
-
 }
 
-
-/*function getSession() {
-    fetch("/getSession")
-        .then(response => response.text())
-        .then(data => {
-            console.log(data);
-        })
+function fetchEmail(){
+	console.log("lol");
+	fetch('/getSession')
+		.then(response => response.text())
+		.then(data => {
+			me = data
+		})
 }
 
-getSession();*/
-
-var me = getSession(function(){
-	console.log("allo : ",this.responseText);
-	return this.responseText;
-})
-
-function getEmail(){
-	return getSession(function(){
-		return this.responseText;
-	});
-}
+var me = ""
 
 var SearchBox = {
 		search:"",
@@ -140,17 +128,16 @@ var PostForm = {
 
 
 var MyPost = {
+		oninit: fetchEmail(), 
 		list: [],
 	    nextToken: "",
 	    loadList: function() {
-	    	console.log("load : ", getEmail());
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+ getSession(function(){
-	            	return this.responseText;
-	            }) })
+	            url: "_ah/api/myApi/v1/mypost/"+me, 
+	            })
 	        .then(function(result) {
-	        	console.log("got:",result)
+	        	console.log("list:",result)
 	        	MyPost.list=result.items
 	            if ('nextPageToken' in result) {
 		        	MyPost.nextToken= result.nextPageToken
@@ -174,19 +161,16 @@ var MyPost = {
 	            }})
 	    },
  	    postMessage: function() {
- 			var data={'owner':getSession(function(){
-            	return this.responseText;
-            }),
+ 			var data={'owner': me,
  					'url':PostForm.url,
  					'body':PostForm.body}
- 	    	console.log("post:"+data["url"])
      		return m.request({
          		method: "POST",
          		url: "_ah/api/myApi/v1/postMessage",
              	params: data,
          	})
   	    	.then(function(result) {
-     	 			console.log("got:",result)
+     	 			console.log("post:",result)
      	 			MyPost.loadList()
          	 	})
      	}
@@ -207,6 +191,7 @@ var PostView = {
 	      m('th', {width:"50px"}, "Bodys"),
 	      m('th', {width:"50px"}, "Urls"),
 	      m('th', {width:"50px"}, "Like"),
+	      m('th', {width:"50px"}, "Follow"),
 	    ]),
 	    MyPost.list.map(function(item) {
 		      return m("tr", [
@@ -217,7 +202,7 @@ var PostView = {
 						url: "_ah/api/myApi/v1/ajouterLike",
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
-							"owner":getEmail()},
+							"owner":me},
 					})
 	                 }},"like")),
 	                 
@@ -237,8 +222,16 @@ var PostView = {
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),
 	        m('td', m('label', item.properties.likec)),
-	      ])
-	    }),
+
+            m("td", m("button", {onclick: function(e) {
+				// +1 like au clic si pas déjà liké            	            	
+            	return m.request({
+					method: "PUT",
+					url: "_ah/api/myApi/v1/follow/"+me+"/"+item.properties.owner,
+					params: {},
+				})
+                 }},"Follow")),
+	    ])}),
 //	    m("div", isError ? "An error occurred" : "Saved"),
 	    m('button',{
 		      class: 'button is-link',

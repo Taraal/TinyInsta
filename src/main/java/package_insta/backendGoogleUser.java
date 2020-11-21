@@ -81,6 +81,8 @@ public class backendGoogleUser extends HttpServlet {
 	    			e.setProperty("nom", nom);
 	    			e.setProperty("prenom", prenom);
 	    			e.setProperty("email", email);
+					e.setProperty("subscribers", new ArrayList<String>());
+					e.setProperty("subscriptions", new ArrayList<String>());
 	    			datastore.put(e);
 	    			
 	    			req.getSession().setAttribute("email", email);

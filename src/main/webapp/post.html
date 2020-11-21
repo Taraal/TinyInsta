@@ -74,7 +74,7 @@ var SearchBox = {
 function follow(){
 	m.request({
 		method:"PUT",
-		url: "_ah/api/myApi/v1/follow/sylouan.corfa@gmail.com/clemment.picard.44@gmail.com"
+		url: "_ah/api/myApi/v1/user/follow/sylouan.corfa@gmail.com/clemment.picard.44@gmail.com"
 	});
 }
 
@@ -119,7 +119,7 @@ var MyPost = {
 	    loadList: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+me, 
+	            url: "_ah/api/myApi/v1/post/mypost/"+me, 
 	            })
 	        .then(function(result) {
 	        	console.log("list:",result)
@@ -133,7 +133,7 @@ var MyPost = {
 	    next: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+ getSession(function(){
+	            url: "_ah/api/myApi/v1/post/mypost/"+ getSession(function(){
 	            	return this.responseText;
 	            }) +"?next="+MyPost.nextToken})
 	        .then(function(result) {
@@ -151,7 +151,7 @@ var MyPost = {
  					'body':PostForm.body}
      		return m.request({
          		method: "POST",
-         		url: "_ah/api/myApi/v1/postMessage",
+         		url: "_ah/api/myApi/v1/post/postMessage",
              	params: data,
          	})
   	    	.then(function(result) {
@@ -184,7 +184,7 @@ var PostView = {
 					// +1 like au clic si pas déjà liké            	            	
 	            	return m.request({
 						method: "POST",
-						url: "_ah/api/myApi/v1/ajouterLike",
+						url: "_ah/api/myApi/v1/post/ajouterLike",
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
 							"owner":me},
@@ -195,7 +195,7 @@ var PostView = {
 	           	// -1 like au clic si déjà liké            	            	
 	            	return m.request({
 						method: "POST",
-						url: "_ah/api/myApi/v1/supprimerLike",
+						url: "_ah/api/myApi/v1/post/supprimerLike",
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
 							"owner":getEmail()},
@@ -212,7 +212,7 @@ var PostView = {
 				// +1 like au clic si pas déjà liké            	            	
             	return m.request({
 					method: "PUT",
-					url: "_ah/api/myApi/v1/follow/"+me+"/"+item.properties.owner,
+					url: "_ah/api/myApi/v1/user/follow/"+me+"/"+item.properties.owner,
 					params: {},
 				})
                  }},"Follow")),

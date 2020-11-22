@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package_insta\getSession.class
 package_insta\PostMessage.class
 package_insta\ScoreEndpoint.class
@@ -5,3 +6,12 @@ package_insta\IdTokenVerifier.class
 package_insta\UserEndpoint.class
 package_insta\backendGoogleUser.class
 package_insta\HelloAppEngine.class
+=======
+package_insta/IdTokenVerifier.class
+package_insta/HelloAppEngine.class
+package_insta/ScoreEndpoint.class
+package_insta/PostMessage.class
+package_insta/UserEndpoint.class
+package_insta/backendGoogleUser.class
+package_insta/getSession.class
+>>>>>>> 846b12b0a682da5ebe65370d64820cc2153d0e66

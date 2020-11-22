@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
@@ -82,13 +83,18 @@ public class UserEndpoint {
 		return user;
 	}
 	
+	
+	
+	
+	
+	
 	/* Makes userA follow userB
 	 * @param emailA : email property of userA
 	 * @param emailB : email property of userB
 	 * @return boolean : True if successful, False otherwise
 	 */
 	@ApiMethod(name= "follow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.PUT)
-	public boolean follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
+	public void follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
 		
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);
@@ -108,12 +114,10 @@ public class UserEndpoint {
 		
 		txn.commit();
 		
-		return true;
-		
 	}
 	
 	@ApiMethod(name = "unfollow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.DELETE)
-	public boolean unfollow(@Named("emailA") String emailA, @Named("userB") String emailB) {
+	public void unfollow(@Named("emailA") String emailA, @Named("userB") String emailB) {
 	
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);
@@ -133,7 +137,5 @@ public class UserEndpoint {
 		
 		txn.commit();
 		
-		
-		return true;
 	}
 }

@@ -39,7 +39,11 @@ var SearchBox = {
 		    return m("form", {
 		      onsubmit: function(e) {
 		    	e.preventDefault()
-		    	mySearch.postSearch();
+		    	
+		    	url = 'queryResult.html?query='+SearchBox.search;
+		    	
+		    	window.location = encodeURI(url);
+		    	//mySearch.postSearch();
 
 		      }}, 
 		      [
@@ -55,22 +59,7 @@ var SearchBox = {
 		}
 
 
-var mySearch = {
- 	    postSearch: function() {
-     		return m.request({
-         		method: "GET",
-         		url: "_ah/api/myApi/v1/getUserByName",
-             	params: {"inputBar":SearchBox.search},
-         	})
-  	    	.then(function(result) {
-	  	    		for (i = 0; i < result.items.length; i++) {
-	  	    			console.log(result.items[i].properties.userName)
-	  	    		} 
-     	 			
-     	 			
-         	 	})
-     	}
-}
+
 
 
 var PostForm = {

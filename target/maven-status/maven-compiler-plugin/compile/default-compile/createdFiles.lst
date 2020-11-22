@@ -5,4 +5,3 @@ package_insta\IdTokenVerifier.class
 package_insta\UserEndpoint.class
 package_insta\backendGoogleUser.class
 package_insta\HelloAppEngine.class
-package_insta\PopulateMyDb.class

@@ -176,11 +176,21 @@ var PostView = {
 							"owner":me},
 	     				})
 	                  }},"dislike")),
-                 m("td", m("button", {onclick: function(e) {
-                	 //return m.request({
- 					//	method: "POST",
- 					//	url: "_ah/api/myApi/v1/NewPosts",
- 	     			//	})
+               m("td", m("button", {onclick: function(e) {
+            	   //return m.request({
+						//method: "POST",
+						//url: "_ah/api/myApi/v1/NewUsers",
+	     				//})
+	     				
+	     				//method: "POST",
+						//url: "_ah/api/myApi/v1/NewPosts",
+	     				//})
+            	   
+            	   return m.request({
+ 						method: "POST",
+ 						url: "_ah/api/myApi/v1/NewFollows",
+ 						params: {"user_id":me},
+ 	     				})
                  }},"del")),
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),

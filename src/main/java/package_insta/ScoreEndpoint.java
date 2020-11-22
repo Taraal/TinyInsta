@@ -33,6 +33,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.repackaged.com.google.protobuf.Duration;
@@ -76,10 +77,12 @@ public class ScoreEndpoint {
 				date_post = "0"+date_post;
 			}
 			
+			String date_post2 = format.format(date_today);
+			
 			// Propriétés de chaque post
 			e.setProperty("id_post", date_post + " - " + pm.owner);
 			e.setProperty("owner", pm.owner);
-			e.setProperty("date", new Date());
+			e.setProperty("date", date_post2);
 			e.setProperty("url", pm.url);
 			e.setProperty("body", pm.body);
 			ArrayList<String> list_likers = new ArrayList<String>();
@@ -228,10 +231,25 @@ public class ScoreEndpoint {
 	@ApiMethod(name = "mypost", httpMethod = HttpMethod.GET)
 	public CollectionResponse<Entity> mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
 
-	    Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
-	    //text.substring(67, text.length() - 1));
+		//Filter filterUser = new Query.FilterPredicate("id_post".substring(19, "id_post".length())), Query.FilterOperator.EQUAL, user_id);  
+        //Query query = new Query("User").setFilter(filterUser);
+		
+		Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
 	    
+		//DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		//Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, name);  
+        //Query query = new Query("User").setFilter(filterUser);
+        //Entity user = ds.prepare(query).asSingleEntity();
+        
+        //ArrayList<String> list_follows = (ArrayList<String>)user.getProperty("follows");
+		
+	    //Filter filterPost = new Query.FilterPredicate("owner", Query.FilterOperator.IN, list_follows);  
+        //Query q = new Query("Post").setFilter(filterPost);
+	    //q.addSort("date", SortDirection.DESCENDING);	    
 
+		
+		
+		
 	    // https://cloud.google.com/appengine/docs/standard/python/datastore/projectionqueries#Indexes_for_projections
 	    //q.addProjection(new PropertyProjection("body", String.class));
 	    //q.addProjection(new PropertyProjection("date", java.util.Date.class));
@@ -316,7 +334,7 @@ public class ScoreEndpoint {
 		// Create 200 users who follow each other
 		for (int i = 0; i < 200; i++) {
 			Entity e = new Entity("User");
-			e.setProperty("email", "f" + i + "@univ_chambery.fr");
+			e.setProperty("email", "f" + i + "@test.fr");
 			//ArrayList<String> empty_L = new ArrayList<String>();
 			//empty_L.add("");
 			//e.setProperty("followers", empty_L);
@@ -329,9 +347,9 @@ public class ScoreEndpoint {
 			ArrayList<String> fset = new ArrayList<String>();
 			fset.add("");
 			for (int j = 0; j < 200; j++) {
-				fset.add("first" + j + " " + "last" + j);
+				fset.add("f" + j + "@test.fr");
 			}
-			fset.remove("first" + i + " " + "last" + i);
+			fset.remove("f" + i + "@test.fr");
 			e.setProperty("followers", fset);
 			e.setProperty("follows", fset);
 
@@ -341,8 +359,8 @@ public class ScoreEndpoint {
 		
 		// Create 50 users who follow each other
 		for (int i = 200; i < 250; i++) {
-			Entity e = new Entity("User", "f" + i);
-			e.setProperty("email", "f" + i + "@univ_caen.fr");
+			Entity e = new Entity("User");
+			e.setProperty("email", "f" + i + "@test.fr");
 			//ArrayList<String> empty_L = new ArrayList<String>();
 			//empty_L.add("");
 			//e.setProperty("followers", empty_L);
@@ -355,9 +373,9 @@ public class ScoreEndpoint {
 			ArrayList<String> fset = new ArrayList<String>();
 			fset.add("");
 			for (int j = 200; j < 250; j++) {
-				fset.add("first" + j + " " + "last" + j);
+				fset.add("f" + j + "@test.fr");
 			}
-			fset.remove("first" + i + " " + "last" + i);
+			fset.remove("f" + i + "@test.fr");
 			e.setProperty("followers", fset);
 			e.setProperty("follows", fset);
 
@@ -367,8 +385,8 @@ public class ScoreEndpoint {
 		
 		// Create 50 lonely users, life can be hard
 		for (int i = 250; i < 300; i++) {
-			Entity e = new Entity("User", "f" + i);
-			e.setProperty("email", "f" + i + "@univ_perpignan.fr");
+			Entity e = new Entity("User");
+			e.setProperty("email", "f" + i + "@test.fr");
 			//ArrayList<String> empty_L = new ArrayList<String>();
 			//empty_L.add("");
 			//e.setProperty("followers", empty_L);
@@ -414,10 +432,12 @@ public class ScoreEndpoint {
 				date_post = "0"+date_post;
 			}
 			
+			String date_post2 = format.format(date_today);
+			
 			// Propriétés de chaque post
-			e.setProperty("id_post", date_post + " - " + "first" + i + " " + "last" + i);
-			e.setProperty("owner", "first" + i + " " + "last" + i);
-			e.setProperty("date", new Date());
+			e.setProperty("id_post", date_post + " - " + "f" + i + "@test.fr");
+			e.setProperty("owner", "f" + i + "@test.fr");
+			e.setProperty("date", date_post2);
 			e.setProperty("url", "http://placehold.it/120x120&text=image" + i);
 			e.setProperty("body", "Hi, my name is first" + i + ", I like potatoes.");
 			ArrayList<String> list_likers = new ArrayList<String>();
@@ -440,5 +460,99 @@ public class ScoreEndpoint {
 	        datastore.put(compteurLikePost);
 	    }
 		}
+	}
+	
+	
+	
+	// On ajoute des follows et followers fictifs (faux comptes précédemment créés) à un de nos comptes pour faire des tests
+	@ApiMethod(name = "NewFollows", path = "/myApi/v1/NewFollows", httpMethod = HttpMethod.POST)
+	public void NewFollows(@Named("user_id") String user_id) {
+		// Sélection du user
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, user_id);  
+        Query query = new Query("User").setFilter(filterUser);
+        Entity user = ds.prepare(query).asSingleEntity();
+        
+        // Liste des follows et followers
+        ArrayList<String> list_follows = new ArrayList<String>();
+        ArrayList<String> list_followers = new ArrayList<String>();
+        
+        // Ajout de follows + followers (50 dans ce qui ont 200 follows, 25 dans ceux qui en ont 50, et 25 dans ceux 
+        // qui en ont 0)
+        for(int i = 1; i <= 50; i++){
+        	list_follows.add("f" + i + "@test.fr");
+        	list_followers.add("f" + i + "@test.fr");
+        }
+        for(int j = 200; j <= 225; j++){
+        	list_follows.add("f" + j + "@test.fr");
+        	list_followers.add("f" + j + "@test.fr");
+        }
+        for(int k = 250; k <= 275; k++){
+        	list_follows.add("f" + k + "@test.fr");
+        	list_followers.add("f" + k + "@test.fr");
+        }
+        user.setProperty("follows", list_follows);
+        user.setProperty("followers", list_followers);
+        ds.put(user);
+        
+        
+        // Puis on ajoute le user dans les listes de follows et de followers des comptes fictifs
+        for(int i = 1; i <= 50; i++){
+	        DatastoreService datastore1 = DatastoreServiceFactory.getDatastoreService();
+	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + i + "@test.fr");  
+	        Query query1 = new Query("User").setFilter(filterUs1);
+	        Entity f = ds.prepare(query1).asSingleEntity();
+	        
+	        // Liste des follows et followers
+	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
+	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
+	        
+	        // Ajout du user en question aux listes
+	        list_follows1.add(user_id);
+        	list_followers1.add(user_id);
+        	
+        	f.setProperty("follows", list_follows1);
+            f.setProperty("followers", list_followers1);
+        	
+        	datastore1.put(f);
+        }
+        for(int j = 200; j <= 225; j++){
+	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + j + "@test.fr");  
+	        Query query1 = new Query("User").setFilter(filterUs1);
+	        Entity f = ds.prepare(query1).asSingleEntity();
+	        
+	        // Liste des follows et followers
+	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
+	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
+	        
+	        // Ajout du user en question aux listes
+	        list_follows1.add(user_id);
+        	list_followers1.add(user_id);
+        	
+        	f.setProperty("follows", list_follows1);
+            f.setProperty("followers", list_followers1);
+        	
+        	datastore2.put(f);
+        }
+        for(int k = 250; k <= 275; k++){
+	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + k + "@test.fr");  
+	        Query query1 = new Query("User").setFilter(filterUs1);
+	        Entity f = ds.prepare(query1).asSingleEntity();
+	        
+	        // Liste des follows et followers
+	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
+	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
+	        
+	        // Ajout du user en question aux listes
+	        list_follows1.add(user_id);
+        	list_followers1.add(user_id);
+        	
+        	f.setProperty("follows", list_follows1);
+            f.setProperty("followers", list_followers1);
+        	
+        	datastore2.put(f);
+        }
 	}
 }

@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
@@ -37,6 +39,8 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.repackaged.com.google.protobuf.Duration;
 import com.google.appengine.repackaged.org.joda.time.Interval;
+import com.google.appengine.api.datastore.TransactionOptions;
+
 
 @Api(name = "myApi",
      version = "v1",
@@ -105,7 +109,60 @@ public class ScoreEndpoint {
 		return e;
 	}
 	
-	
+	@ApiMethod(name = "getUserByName", path = "/myApi/v1/getUserByName", httpMethod = HttpMethod.GET)
+    public List<Entity> getUserByName(@Named("inputBar") String inputBar) {
+		ArrayList<String> ListNameQuery = new ArrayList<String>();
+		ArrayList<Entity> FinalListUsers = new ArrayList<Entity>();
+		
+		
+		
+		String regex = "[!._,@? ] {}~&()|^;/%$";
+		StringTokenizer str = new StringTokenizer(inputBar,regex);
+		
+		while(str.hasMoreTokens()) {
+			ListNameQuery.add(str.nextToken().toLowerCase());
+	    }
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		for (int i=0;i<ListNameQuery.size();i++) {
+			//System.out.println("motQuery :");
+			//System.out.println(ListNameQuery.get(i));
+			
+			Query q1 = new Query("User").setFilter(new FilterPredicate("nom", FilterOperator.EQUAL, ListNameQuery.get(i)));
+			PreparedQuery pq1 = datastore.prepare(q1);
+			
+			Query q2 = new Query("User").setFilter(new FilterPredicate("prenom", FilterOperator.EQUAL, ListNameQuery.get(i)));
+			PreparedQuery pq2 = datastore.prepare(q2);
+			
+			List<Entity> resultNom = pq1.asList(FetchOptions.Builder.withDefaults());
+			List<Entity> resultPrenom = pq2.asList(FetchOptions.Builder.withDefaults());
+			
+			for (int j=0;j<resultNom.size();j++) {
+				FinalListUsers.add(resultNom.get(j));
+			}
+			
+			for (int j=0;j<resultPrenom.size();j++) {
+				FinalListUsers.add(resultPrenom.get(j));
+			}
+			
+			
+		}
+		
+		//Suppression des doublons
+		Set<Entity> mySet = new HashSet<Entity>(FinalListUsers);
+	    List<Entity> FinalListUsersUnique = new ArrayList<Entity>(mySet);
+	 
+	    /*System.out.println("------------------------------");
+		for(int k=0;k<FinalListUsersUnique.size();k++) {
+			System.out.println(FinalListUsersUnique.size());
+			System.out.println(FinalListUsersUnique.get(k).getProperty("userName"));
+		}
+		
+		System.out.println("------------------------------");*/
+		
+		return FinalListUsersUnique;
+    }
 	
 	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
     public void ajouterLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
@@ -441,4 +498,98 @@ public class ScoreEndpoint {
 	    }
 		}
 	}
+	
+	
+	/* Finds a user in the datastore by its email
+	 * Crappy method as it fails if the result is null 
+	 * TODO : try/catch the null result, return null if no user is found 
+	 * 
+	 * @param email : email of the requested user
+	 * @return Entity : the requested user
+	 */
+	static public Entity getUserByEmail(@Named("email") String email) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+		System.out.println(result);
+		Entity user = result.get(0);
+		return user;
+	}
+	
+	@ApiMethod(name = "getUser", path = "user/{email}", httpMethod = HttpMethod.GET)
+	public Object getUser(@Named("email") String email) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+		
+		Entity user = new Entity("User");
+		user.setProperty("key", result.get(0).getProperty("key"));
+		user.setProperty("email", result.get(0).getProperty("email"));
+		return user;
+	}
+	
+	/* Makes userA follow userB
+	 * @param emailA : email property of userA
+	 * @param emailB : email property of userB
+	 * @return boolean : True if successful, False otherwise
+	 */
+	@ApiMethod(name= "follow", path = "follow/{emailA}/{emailB}", httpMethod = HttpMethod.PUT)
+	public void follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
+		
+		Entity userA = getUserByEmail(emailA);
+		Entity userB = getUserByEmail(emailB);
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		TransactionOptions options = TransactionOptions.Builder.withXG(true);
+		Transaction txn = datastore.beginTransaction(options);
+		
+		ArrayList<String> follows = (ArrayList<String>)userA.getProperty("follows");
+		if (!follows.contains(emailB)) {
+			follows.add(emailB);
+			userA.setProperty("follows", follows);
+			datastore.put(userA);
+		}
+		
+		ArrayList<String> followers = (ArrayList<String>) userB.getProperty("followers");
+		if (!followers.contains(emailA)) {
+			followers.add(emailA);
+			userB.setProperty("followers", followers);
+			datastore.put(userB);
+		}
+		txn.commit();
+		
+	}
+	
+	/* Makes userA unfollow userB
+	 * 
+	 */
+	@ApiMethod(name = "unfollow", path = "follow/{emailA}/{emailB}", httpMethod = HttpMethod.DELETE)
+	public void unfollow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
+	
+		Entity userA = getUserByEmail(emailA);
+		Entity userB = getUserByEmail(emailB);
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
+		
+		ArrayList<String> follows = (ArrayList<String>)userA.getProperty("follows");
+		follows.remove(emailB);
+		userA.setProperty("follows", follows);
+		datastore.put(userA);
+		
+		ArrayList<String> followers = (ArrayList<String>) userB.getProperty("followers");
+		followers.remove(emailA);
+		userB.setProperty("followers", followers);
+		datastore.put(userB);
+		
+		txn.commit();
+		
+	}
+
 }

@@ -24,7 +24,6 @@
 <script>	
 
 function fetchEmail(){
-	console.log("lol");
 	fetch('/getSession')
 		.then(response => response.text())
 		.then(data => {
@@ -39,20 +38,38 @@ var SearchBox = {
 		  view: function() {
 		    return m("form", {
 		      onsubmit: function(e) {
-		        e.preventDefault()
-		        MyPost.postMessage()
+		    	e.preventDefault()
+		    	
+		    	url = 'queryResult.html?query='+SearchBox.search;
+		    	
+		    	window.location = encodeURI(url);
+		    	//mySearch.postSearch();
+
 		      }}, 
 		      [
 		    	m('div', {class:'field'},[
-		         m("label", {class:'label'},"Search for someone"),
+		         m("label", {class:'label'},"Search"),
 		         m('div',{class:'control'}, m("input[type=text]", {
 		          class:'input is-rounded',
-		          placeholder:"Someone, something, somewhere...",
-		             oninput: function(e) {PostForm.url = e.target.value}})),
+		          placeholder:"Search for anyone ...",
+		             oninput: function(e) {SearchBox.search = e.target.value}})),
 		        ])
 		    ])
 		  }
 		}
+
+function follow(){
+	m.request({
+		method:"PUT",
+		url: "_ah/api/myApi/v1/follow/:follower/:clem",
+		params:{
+			follower: "sylouan.corfa@gmail.com",
+			clem: "t4raal@gmail.com"
+		}
+	});
+}
+
+
 
 
 var PostForm = {
@@ -111,6 +128,7 @@ var MyPost = {
 	        return m.request({
 	            method: "GET",
 	            url: "_ah/api/myApi/v1/mypost/"+ me +"?next="+MyPost.nextToken})
+
 	        .then(function(result) {
 	        	console.log("got:",result)
 	        	result.items.map(function(item){MyPost.list.push(item)})
@@ -189,8 +207,12 @@ var PostView = {
             m("td", m("button", {onclick: function(e) {         	            	
             	return m.request({
 					method: "PUT",
-					url: "_ah/api/myApi/v1/follow/"+me+"/"+item.properties.owner,
-					params: {},
+					url: "_ah/api/myApi/v1/follow/:me/+:followed",
+					params: {
+						me: me,
+						followed: item.properties.owner
+						
+					},
 				})
                  }},"Follow")),
 	    ])}),

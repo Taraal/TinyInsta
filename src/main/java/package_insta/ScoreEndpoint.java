@@ -407,8 +407,11 @@ public class ScoreEndpoint {
 		
 	}
 	
-	@ApiMethod(name = "unfollow", path = "follow/{userA}/{userB}", httpMethod = HttpMethod.DELETE)
-	public void unfollow(@Named("userA") String emailA, @Named("userB") String emailB) {
+	/* Makes userA unfollow userB
+	 * 
+	 */
+	@ApiMethod(name = "unfollow", path = "follow/{emailA}/{emailB}", httpMethod = HttpMethod.DELETE)
+	public void unfollow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
 	
 		Entity userA = getUserByEmail(emailA);
 		Entity userB = getUserByEmail(emailB);

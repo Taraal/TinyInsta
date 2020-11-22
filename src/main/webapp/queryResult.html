@@ -21,8 +21,19 @@
 <body>
 	
 		
-<script>	
+<script>		
+
+
+	function fetchEmail(){
+		fetch('/getSession')
+			.then(response => response.text())
+			.then(data => {
+				me = data
+			})
+	}
 	
+	var me = ""
+		
 	function addMajToName (userName) {
 		temp = userName.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 		return temp;
@@ -39,8 +50,10 @@
 	}
 
 	var queryInput = decodeURI(getParameter()["query"]);	
+
 	
 	var mySearch = {
+			oninit: fetchEmail(),
 			list: [],
 	 	    postSearch: function() {
 	     		return m.request({
@@ -51,7 +64,11 @@
 	  	    	.then(function(result) {
 		  	    		
 	  	    			for (i = 0; i < result.items.length; i++) {
-	  	    				mySearch.list.push(result.items[i].properties.userName)
+	  	    				mySearch.list.push(
+	  	    						{
+	  	    							"username": result.items[i].properties.userName,
+	  	    							"email": result.items[i].properties.email
+	  	    					})
 		  	    			//console.log(result.items[i].properties.userName)
 		  	    			
 	  	    			} 
@@ -61,7 +78,7 @@
 		  	    			
 	  	    			} 
 	     	 			
-		  	    		
+		  	    		console.log(mySearch.list);
 	         	 	})
 	     	}
 	}
@@ -82,13 +99,28 @@
 				    ]),
 				    mySearch.list.map(function(item) {
 				    	return m("tr", [
-				    		m('td', m('label', addMajToName(item))),
-				    		m("td", m("button", {onclick: function(e) {
-			     				
-			                 }},"Follow")),
-			                 m("td", m("button", {onclick: function(e) {
-			      				
-			                  }},"Unfollow")),
+				    		m('td', m('label', addMajToName(item.username))),
+				    		m("td", m("button", {onclick: function(){
+				    			m.request({
+				    				method:"PUT",
+				    				url: "_ah/api/myApi/v1/follow/:emailA/:emailB",
+				    				params:{
+				    					emailA: me,
+				    					emailB: item.email
+				    				}
+				    			});
+				    		}},"Follow")),
+				    		
+			                 m("td", m("button", {onclick: function(){
+			             		m.request({
+			            			method:"DELETE",
+			            			url: "_ah/api/myApi/v1/follow/:emailA/:emailB",
+			            			params:{
+			            				emailA: me,
+			            				emailB: item.email
+			            			}
+			            		})
+			            	}},"Unfollow")),
 				    		
 				    	])
 				    }),

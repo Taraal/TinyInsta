@@ -2,8 +2,11 @@ package package_insta;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
@@ -85,7 +88,60 @@ public class ScoreEndpoint {
 		return e;
 	}
 	
-	
+	@ApiMethod(name = "getUserByName", path = "/myApi/v1/getUserByName", httpMethod = HttpMethod.GET)
+    public List<Entity> getUserByName(@Named("inputBar") String inputBar) {
+		ArrayList<String> ListNameQuery = new ArrayList<String>();
+		ArrayList<Entity> FinalListUsers = new ArrayList<Entity>();
+		
+		
+		
+		String regex = "[!._,@? ] {}~&()|^;/%$";
+		StringTokenizer str = new StringTokenizer(inputBar,regex);
+		
+		while(str.hasMoreTokens()) {
+			ListNameQuery.add(str.nextToken().toLowerCase());
+	    }
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		for (int i=0;i<ListNameQuery.size();i++) {
+			//System.out.println("motQuery :");
+			//System.out.println(ListNameQuery.get(i));
+			
+			Query q1 = new Query("User").setFilter(new FilterPredicate("nom", FilterOperator.EQUAL, ListNameQuery.get(i)));
+			PreparedQuery pq1 = datastore.prepare(q1);
+			
+			Query q2 = new Query("User").setFilter(new FilterPredicate("prenom", FilterOperator.EQUAL, ListNameQuery.get(i)));
+			PreparedQuery pq2 = datastore.prepare(q2);
+			
+			List<Entity> resultNom = pq1.asList(FetchOptions.Builder.withDefaults());
+			List<Entity> resultPrenom = pq2.asList(FetchOptions.Builder.withDefaults());
+			
+			for (int j=0;j<resultNom.size();j++) {
+				FinalListUsers.add(resultNom.get(j));
+			}
+			
+			for (int j=0;j<resultPrenom.size();j++) {
+				FinalListUsers.add(resultPrenom.get(j));
+			}
+			
+			
+		}
+		
+		//Suppression des doublons
+		Set<Entity> mySet = new HashSet<Entity>(FinalListUsers);
+	    List<Entity> FinalListUsersUnique = new ArrayList<Entity>(mySet);
+	 
+	    /*System.out.println("------------------------------");
+		for(int k=0;k<FinalListUsersUnique.size();k++) {
+			System.out.println(FinalListUsersUnique.size());
+			System.out.println(FinalListUsersUnique.get(k).getProperty("userName"));
+		}
+		
+		System.out.println("------------------------------");*/
+		
+		return FinalListUsersUnique;
+    }
 	
 	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
     public void ajouterLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {

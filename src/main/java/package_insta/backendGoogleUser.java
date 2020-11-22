@@ -82,9 +82,9 @@ public class backendGoogleUser extends HttpServlet {
 	    		//User doesn't exist in db -> add it to db
 	    		if(result.isEmpty()) {
 	    			Entity e = new Entity("User");
-	    			e.setProperty("userName", name);
-	    			e.setProperty("nom", nom);
-	    			e.setProperty("prenom", prenom);
+	    			e.setProperty("userName", name.toLowerCase());
+	    			e.setProperty("nom", nom.toLowerCase());
+	    			e.setProperty("prenom", prenom.toLowerCase());
 	    			e.setProperty("email", email);
 					e.setProperty("followers", followers);
 					e.setProperty("follows", follows);

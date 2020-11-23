@@ -200,6 +200,9 @@ var PostView = {
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
 							"owner":me},
+					}).then(function(response){
+						item.properties.likec += 1
+						m.mount(document.body, Hello);
 					})
 	                 }},"like")),
 	                 
@@ -211,7 +214,10 @@ var PostView = {
 						params: {"idPost":item.key.id, 
 							"id_post":item.properties.id_post, 
 							"owner":me},
-	     				})
+	     				}).then(function(response){
+							item.properties.likec -= 
+							m.mount(document.body, Hello);
+						})
 	                  }},"dislike")),
                m("td", m("button", {onclick: function(e) {
             	   //return m.request({

@@ -61,7 +61,10 @@ import com.google.appengine.api.datastore.TransactionOptions;
 public class ScoreEndpoint {
 
 	
-	
+	/* Envoie un post sur le datastore
+	 * @param pm: un PostMessage contenant un url, un body, un owner
+	 * 
+	 */
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
 	public Entity postMessage(PostMessage pm) throws ParseException {
 		
@@ -103,7 +106,10 @@ public class ScoreEndpoint {
 	}
 	
 	
-	
+	/*Retourne un utilisateur grâce à son prénom ou son nom
+	 * @param inputBar : une chaîne de caractères (nom/prénom) de l'utilisateur recherché
+	 * @return : l'utilisateur recherché
+	 */
 	@ApiMethod(name = "getUserByName", path = "/myApi/v1/getUserByName", httpMethod = HttpMethod.GET)
     public List<Entity> getUserByName(@Named("inputBar") String inputBar) {
 		ArrayList<String> ListNameQuery = new ArrayList<String>();
@@ -121,9 +127,7 @@ public class ScoreEndpoint {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
 		for (int i=0;i<ListNameQuery.size();i++) {
-			//System.out.println("motQuery :");
-			//System.out.println(ListNameQuery.get(i));
-			
+
 			Query q1 = new Query("User").setFilter(new FilterPredicate("nom", FilterOperator.EQUAL, ListNameQuery.get(i)));
 			PreparedQuery pq1 = datastore.prepare(q1);
 			
@@ -147,20 +151,14 @@ public class ScoreEndpoint {
 		//Suppression des doublons
 		Set<Entity> mySet = new HashSet<Entity>(FinalListUsers);
 	    List<Entity> FinalListUsersUnique = new ArrayList<Entity>(mySet);
-	 
-	    /*System.out.println("------------------------------");
-		for(int k=0;k<FinalListUsersUnique.size();k++) {
-			System.out.println(FinalListUsersUnique.size());
-			System.out.println(FinalListUsersUnique.get(k).getProperty("userName"));
-		}
-		
-		System.out.println("------------------------------");*/
 		
 		return FinalListUsersUnique;
     }
 	
 	
-	
+	/*Ajoute un like 
+	 * 
+	 */
 	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
     public void ajouterLike(@Named("idPost") String idPost, @Named("id_post2") String id_post2, @Named("owner") String owner) {
 
@@ -275,7 +273,10 @@ public class ScoreEndpoint {
 		
     }
 	
-	
+	/*Retourne la liste des posts des gens suivis par un utilisateur
+	 * @param email : email de l'utilisateur concerné
+	 * @return : liste ordonnée par date des posts des gens suivis
+	 */
 	@ApiMethod(name = "followerPost", path="/myApi/v1/getposts/{email}", httpMethod = HttpMethod.GET)
 	public ArrayList followerPost(@Named("email") String email){
 		
@@ -316,152 +317,10 @@ public class ScoreEndpoint {
 	}
 	
 	
-	@ApiMethod(name = "mypost", path = "/myApi/v1/mypost", httpMethod = HttpMethod.GET)
-	public List<Entity>  mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
-
-		//Filter filterUser = new Query.FilterPredicate("id_post".substring(19, "id_post".length())), Query.FilterOperator.EQUAL, user_id);  
-        //Query query = new Query("User").setFilter(filterUser);
-		
-		
-		/*DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		
-		
-		Filter filterKey = new Query.FilterPredicate("key", FilterOperator.GREATER_THAN, name);  
-        Query query = new Query("Post_key").setFilter(filterKey);
-        Entity post = datastore.prepare(query).asSingleEntity();
-		
-		
-		Query q =
-                new Query("RetrievePost")
-                	.setFilter(new FilterPredicate("__key__" , FilterOperator.GREATER_THAN, KeyFactory.createKey("RetrievePost", pseudo+"_")));
-		*/
-		
-		//Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
-	    
-		
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, name);  
-        Query query = new Query("User").setFilter(filterUser);
-        Entity user = datastore.prepare(query).asSingleEntity();
-        
-        ArrayList<String> list_follows = (ArrayList<String>)user.getProperty("follows");
-        
-        if (list_follows == null){
-            throw new NullPointerException("No follow found");
-        }
-		
-
-		
-		Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.IN, list_follows));
-		PreparedQuery pq = datastore.prepare(q);
-		
-		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
-        
-        
-	    //Filter filterPost = new Query.FilterPredicate("owner", Query.FilterOperator.IN, list_follows);  
-        /*
-        Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.IN, list_follows));
-        q.addSort("date", SortDirection.DESCENDING);*/
-        
-        
-        return result;
-	    //Query q = new Query("Post").setFilter(filterPost);
-	    //q.addSort("date", SortDirection.DESCENDING);	    
-
-		
-		
-		
-	    // https://cloud.google.com/appengine/docs/standard/python/datastore/projectionqueries#Indexes_for_projections
-	    //q.addProjection(new PropertyProjection("body", String.class));
-	    //q.addProjection(new PropertyProjection("date", java.util.Date.class));
-	    //q.addProjection(new PropertyProjection("likec", Integer.class));
-	    //q.addProjection(new PropertyProjection("url", String.class));
-
-	    // looks like a good idea but...
-	    // generate a DataStoreNeedIndexException -> 
-	    // require compositeIndex on owner + date
-	    // Explosion combinatoire.
-	    // q.addSort("date", SortDirection.DESCENDING);
-	    
-	    
-		
-		
-		
-		//DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	    
-       /* DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        
-		PreparedQuery pq = ds.prepare(q);
-	    
-	    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
-	    
-	    if (cursorString != null) {
-	    	fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
-		}
-	    
-	    QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
-	    cursorString = results.getCursor().toWebSafeString();
-	    
-	    return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();*/
-	    
-	}
-	
-	@ApiMethod(name = "getPost",
-		   httpMethod = ApiMethod.HttpMethod.GET)
-	public CollectionResponse<Entity> getPost(User user, @Nullable @Named("next") String cursorString)
-			throws UnauthorizedException {
-
-		if (user == null) {
-			throw new UnauthorizedException("Invalid credentials");
-		}
-
-		Query q = new Query("Post").
-		    setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, user.getEmail()));
-
-		// Multiple projection require a composite index
-		// owner is automatically projected...
-		// q.addProjection(new PropertyProjection("body", String.class));
-		// q.addProjection(new PropertyProjection("date", java.util.Date.class));
-		// q.addProjection(new PropertyProjection("likec", Integer.class));
-		// q.addProjection(new PropertyProjection("url", String.class));
-
-		// looks like a good idea but...
-		// require a composite index
-		// - kind: Post
-		//  properties:
-		//  - name: owner
-		//  - name: date
-		//    direction: desc
-
-		// q.addSort("date", SortDirection.DESCENDING);
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery pq = datastore.prepare(q);
-
-		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
-
-		if (cursorString != null) {
-			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
-		}
-
-		QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
-		cursorString = results.getCursor().toWebSafeString();
-
-		return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
-	}
-	
-	
-
-	
-
-	
-	
-	/* Finds a user in the datastore by its email
-	 * Crappy method as it fails if the result is null 
-	 * TODO : try/catch the null result, return null if no user is found 
+	/* Récupère un utilisateur dans la base grâce à son email
 	 * 
-	 * @param email : email of the requested user
-	 * @return Entity : the requested user
+	 * @param email : email de l'utilisateur recherché
+	 * @return Entity : l'utilisateur recherché
 	 */
 	static public Entity getUserByEmail(@Named("email") String email) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -471,10 +330,21 @@ public class ScoreEndpoint {
 		
 		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
 		System.out.println(result);
-		Entity user = result.get(0);
+		Entity user = null;
+		
+		try {
+			user = result.get(0);
+		}catch(NullPointerException e) {
+			return null;
+		}
+		
 		return user;
+		
 	}
 	
+	
+	/* Version light de getUserByEmail, ne retourne que sa key et son adresse mail
+	 */
 	@ApiMethod(name = "getUser", path = "user/{email}", httpMethod = HttpMethod.GET)
 	public Object getUser(@Named("email") String email) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -492,10 +362,9 @@ public class ScoreEndpoint {
 	
 	
 	
-	/* Makes userA follow userB
-	 * @param emailA : email property of userA
-	 * @param emailB : email property of userB
-	 * @return boolean : True if successful, False otherwise
+	/* Fais suivre userB par userA 
+	 * @param emailA : email de userA
+	 * @param emailB : email de userB
 	 */
 	@ApiMethod(name= "follow", path = "follow/{emailA}/{emailB}", httpMethod = HttpMethod.PUT)
 	public void follow(@Named("emailA") String emailA, @Named("emailB") String emailB) {
@@ -526,7 +395,7 @@ public class ScoreEndpoint {
 	
 	
 	
-	/* Makes userA unfollow userB
+	/* Fais unfollow userB par userA
 	 * 
 	 */
 	@ApiMethod(name = "unfollow", path = "follow/{emailA}/{emailB}", httpMethod = HttpMethod.DELETE)

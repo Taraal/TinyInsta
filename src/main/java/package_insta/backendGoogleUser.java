@@ -79,7 +79,7 @@ public class backendGoogleUser extends HttpServlet {
 	    		followers.add("");
 	    		follows.add("");
 	    		
-	    		//User doesn't exist in db -> add it to db
+	    		//L'utilisateur n'existe pas => on l'ajoute au datastore
 	    		if(result.isEmpty()) {
 	    			Entity e = new Entity("User");
 	    			e.setProperty("userName", name.toLowerCase());
@@ -94,7 +94,7 @@ public class backendGoogleUser extends HttpServlet {
 		            resp.sendRedirect(req.getContextPath() + "/post.html");
 	    		}
 	    		
-	    		//User does exist 
+	    		//L'utilisateur existe déjà => on set la variable de session
 	    		else {
 	    			
 	    			req.getSession().setAttribute("email", email);

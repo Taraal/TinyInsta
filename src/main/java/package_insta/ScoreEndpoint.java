@@ -3,6 +3,8 @@ package package_insta;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -303,7 +305,40 @@ public class ScoreEndpoint {
 		}
 		
     }
+	
+	
+	@ApiMethod(name = "followerPost", path="/myApi/v1/getposts/{email}", httpMethod = HttpMethod.GET)
+	public ArrayList<Entity> followerPost(@Named("email") String email){
+		
+		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+		
+		
+		Entity user = result.get(0);
+		System.out.println((String)user.getProperty("email"));
+		
+		ArrayList<Entity> posts = new ArrayList<Entity>();
+		
+		for(String followEmail: (ArrayList<String>)user.getProperty("follows")) {
+			System.out.println("LOL");
+			System.out.println(followEmail);
+			Query nq = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, followEmail));
 
+			
+			PreparedQuery npq = datastore.prepare(nq);
+			List<Entity> userPosts = npq.asList(FetchOptions.Builder.withDefaults());
+			posts.addAll(userPosts);
+
+		}
+
+		Collections.sort(posts, (o1, o2) -> ((Date)o1.getProperty("date")).compareTo(((Date)o2.getProperty("date"))));
+		
+		Collections.reverse(posts);
+		return posts;
+		
+	}
 	
 	
 	@ApiMethod(name = "mypost", path = "/myApi/v1/mypost", httpMethod = HttpMethod.GET)
@@ -632,7 +667,7 @@ public class ScoreEndpoint {
 	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
 	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
 	        
-	        // Ajout du user en question aux listes
+	        // Ajout du user en questio)n aux listes
 	        list_follows1.add(user_id);
         	list_followers1.add(user_id);
         	

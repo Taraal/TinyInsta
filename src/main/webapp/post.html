@@ -23,6 +23,19 @@
 		
 <script>	
 
+function getPosts(){
+	console.log("test")
+	fetch('_ah/api/myApi/v1/getposts/crackspell@gmail.com')
+		.then(response => response.text())
+		.then(data => {
+			console.log(data);
+			posts = data;
+		})
+}
+
+
+var posts = ''
+
 function fetchEmail(){
 	fetch('/getSession')
 		.then(response => response.text())

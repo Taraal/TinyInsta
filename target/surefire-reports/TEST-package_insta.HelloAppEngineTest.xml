@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="package_insta.HelloAppEngineTest" time="0.206" tests="2" errors="0" skipped="0" failures="0">
-=======
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="package_insta.HelloAppEngineTest" time="0.355" tests="2" errors="0" skipped="0" failures="0">
->>>>>>> interfaceGraph
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="package_insta.HelloAppEngineTest" time="0.34" tests="2" errors="0" skipped="0" failures="0">
   <properties>
     <property name="sun.desktop" value="gnome"/>
     <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
@@ -21,7 +17,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="FR"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-11-openjdk-amd64/lib"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean package"/>
     <property name="jdk.debug" value="release"/>
     <property name="maven.home" value="/usr/share/maven"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -64,10 +60,6 @@
     <property name="library.jansi.path" value="/usr/share/maven/lib/jansi-native"/>
     <property name="java.class.version" value="55.0"/>
   </properties>
-<<<<<<< HEAD
-  <testcase name="helloInfoTest" classname="package_insta.HelloAppEngineTest" time="0.125"/>
-=======
-  <testcase name="helloInfoTest" classname="package_insta.HelloAppEngineTest" time="0.208"/>
->>>>>>> interfaceGraph
+  <testcase name="helloInfoTest" classname="package_insta.HelloAppEngineTest" time="0.203"/>
   <testcase name="doGetWritesResponse" classname="package_insta.HelloAppEngineTest" time="0.004"/>
 </testsuite>

@@ -45,7 +45,7 @@ Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler 
 ### Users
 ![Users](screens_kinds/user.png)
 
-### Compteurs
+### Sous-compteurs
 ![Compteurs](screens_kinds/cpt.png)
 
 ### Posts

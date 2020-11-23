@@ -35,12 +35,16 @@ Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler 
         - si on est follow par 500 users : 315 ms/post
         
 - Combien de likes peut on faire par seconde. Afin de faire face au problème de contention, nous avons créé 10 sous-compteurs par post. L'objectif est d'éviter que des writes soient réalisés au même instant sur une variable identique (un seul compteur de likes). Pour aller plus loin et rendre la scalability plus poussée, nous aurions souhaité créer une fonction permettant d'ajuster le nombre de sous-compteurs au nombre de followers. En effet, un lot de 10 sous-compteurs semble beaucoup pour des utilisateurs générant 50 likes/post, et une goutte d'eau face aux 100 millions d'utilisateurs de Katy Perry.
+
         - résultat final : 13,8 likes/sec --> Ce résultat pourrait sûrement être optimisé en générant des likes en paralèle plutôt que dans une boucle for. Le parallélisme simulerait d'ailleurs mieux une situation avec de vrais users.
         
 - Combien de temps met l'application à retrouver les posts des comptes que l'utilisateur follow. On fonctionne ici avec un filtre posé sur les dates des posts et sur les noms des followsers. 
-        10 derniers posts : 300 ms
-        100 derniers posts : 346 ms
-        500 derniers posts : 408 ms
+        
+        - 10 derniers posts : 300 ms
+        
+        - 100 derniers posts : 346 ms
+        
+        - 500 derniers posts : 408 ms
 
 
 ## Kinds utilisés dans notre appli

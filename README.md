@@ -42,14 +42,14 @@ Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler 
 
 ## Kinds utilisés dans notre appli
 
-# Users
+### Users
 ![Users](screens_kinds/user.png)
 
-# Compteurs
+### Compteurs
 ![Compteurs](screens_kinds/cpt.png)
 
-# Posts
+### Posts
 ![Posts](screens_kinds/post.png)
 
-# Sessions
+### Sessions
 ![Sessions](screens_kinds/session.png)

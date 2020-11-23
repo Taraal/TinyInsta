@@ -247,8 +247,6 @@ public class ScoreEndpoint {
 		
     }
 	
-	
-	
 	@ApiMethod(name = "supprimerLike", path = "/myApi/v1/supprimerLike", httpMethod = HttpMethod.POST)
     public void supprimerLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
 
@@ -308,7 +306,7 @@ public class ScoreEndpoint {
 	
 	
 	@ApiMethod(name = "followerPost", path="/myApi/v1/getposts/{email}", httpMethod = HttpMethod.GET)
-	public ArrayList<Entity> followerPost(@Named("email") String email){
+	public ArrayList followerPost(@Named("email") String email){
 		
 		Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, email));
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -322,6 +320,7 @@ public class ScoreEndpoint {
 		ArrayList<Entity> posts = new ArrayList<Entity>();
 		
 		for(String followEmail: (ArrayList<String>)user.getProperty("follows")) {
+
 			System.out.println("LOL");
 			System.out.println(followEmail);
 			Query nq = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, followEmail));
@@ -330,12 +329,17 @@ public class ScoreEndpoint {
 			PreparedQuery npq = datastore.prepare(nq);
 			List<Entity> userPosts = npq.asList(FetchOptions.Builder.withDefaults());
 			posts.addAll(userPosts);
-
 		}
-
+			
+		try {
 		Collections.sort(posts, (o1, o2) -> ((Date)o1.getProperty("date")).compareTo(((Date)o2.getProperty("date"))));
+		}catch(ClassCastException e) {
+			System.out.println(e.getMessage());
+		}
 		
 		Collections.reverse(posts);
+		System.out.println(posts);
+
 		return posts;
 		
 	}
@@ -363,7 +367,6 @@ public class ScoreEndpoint {
 		
 		//Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
 	    
-		
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, name);  
@@ -431,24 +434,6 @@ public class ScoreEndpoint {
 	    return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();*/
 	    
 	}
-    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	 
 	
 	@ApiMethod(name = "getPost",
 		   httpMethod = ApiMethod.HttpMethod.GET)

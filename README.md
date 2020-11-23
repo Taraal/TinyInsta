@@ -80,7 +80,7 @@ Projet TinyGram - ClémentPicard ~ Sylouan Corfa ~ Jules Roger ~ Kader Salifou
 
     url App Engine : https://tinyinsta-295119.appspot.com/
     url GitHub : https://github.com/Taraal/TinyInsta
-    url interface REST : 
+    url interface REST : https://endpointsportal.tinyinsta-295119.cloud.goog/
 
 
 Le but de ce projet était de réaliser une version réduite d'un application comme Instagram. Pour cela il nous fallait répondre à certaines contraintes. Tout d'abord, il fallait rendre l'application fonctionnelle selon certains critères.
@@ -98,8 +98,17 @@ Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler 
 
 - [ ] Test pour poster un message si on est follow par 10, 100, 500 followers
 - [ ] Combien de likes peut on faire par seconde
-- [ ] Créer une interface graphique
+- [ ] Combien de temps met l'application à retrouver les 10, 100, 500 derniers posts
 
-    ScreenShots kinds google app engine database
+
+
+//Ce quil reste a rediger :
+ce qui marche 
+ce qui ne marche pas 
+temps benchmark
+ce qu'on aurait pu faire si on avait eu le time
+les diffcultées quon a eu
+screens des kinds google db
+does it scale ?
     
 

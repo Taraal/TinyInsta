@@ -109,8 +109,27 @@ public class ScoreEndpoint {
 	        datastore.put(compteurLikePost);
 	    }
 	        
-		return e;
+	    
+	    // Création de clés pour que chaque follower puisse retrouver facilement le post : une clé par follower
+ 		// Sélection du post en question
+ 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+	    Filter filterID = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, pm.owner);  
+	    Query query = new Query("User").setFilter(filterID);
+	    Entity user = ds.prepare(query).asSingleEntity();
+	    
+	    ArrayList<String> list_followers = (ArrayList<String>)user.getProperty("followers");
+	    
+	    for (String follower : list_followers) {
+	    	Entity k = new Entity("Post_key");
+	    	k.setProperty("key", follower + date_post + " - " + pm.owner);
+	    	ds.put(k);
+	    }
+	    
+	    
+		return e;		
 	}
+	
+	
 	
 	@ApiMethod(name = "getUserByName", path = "/myApi/v1/getUserByName", httpMethod = HttpMethod.GET)
     public List<Entity> getUserByName(@Named("inputBar") String inputBar) {
@@ -166,6 +185,8 @@ public class ScoreEndpoint {
 		
 		return FinalListUsersUnique;
     }
+	
+	
 	
 	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
     public void ajouterLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
@@ -285,23 +306,47 @@ public class ScoreEndpoint {
 
 	
 	
-	@ApiMethod(name = "mypost", httpMethod = HttpMethod.GET)
+	@ApiMethod(name = "mypost", path = "/myApi/v1/mypost", httpMethod = HttpMethod.GET)
 	public CollectionResponse<Entity> mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
 
 		//Filter filterUser = new Query.FilterPredicate("id_post".substring(19, "id_post".length())), Query.FilterOperator.EQUAL, user_id);  
         //Query query = new Query("User").setFilter(filterUser);
 		
-		Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
+		
+		/*DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		
+		Filter filterKey = new Query.FilterPredicate("key", FilterOperator.GREATER_THAN, name);  
+        Query query = new Query("Post_key").setFilter(filterKey);
+        Entity post = datastore.prepare(query).asSingleEntity();
+		
+		
+		Query q =
+                new Query("RetrievePost")
+                	.setFilter(new FilterPredicate("__key__" , FilterOperator.GREATER_THAN, KeyFactory.createKey("RetrievePost", pseudo+"_")));
+		*/
+		
+		//Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
 	    
-		//DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		//Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, name);  
-        //Query query = new Query("User").setFilter(filterUser);
-        //Entity user = ds.prepare(query).asSingleEntity();
+		
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, name);  
+        Query query = new Query("User").setFilter(filterUser);
+        Entity user = datastore.prepare(query).asSingleEntity();
         
-        //ArrayList<String> list_follows = (ArrayList<String>)user.getProperty("follows");
+        ArrayList<String> list_follows = (ArrayList<String>)user.getProperty("follows");
+        
+        if (list_follows == null){
+            throw new NullPointerException("No follow found");
+        }
 		
 	    //Filter filterPost = new Query.FilterPredicate("owner", Query.FilterOperator.IN, list_follows);  
-        //Query q = new Query("Post").setFilter(filterPost);
+	    
+        Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.IN, list_follows));
+        q.addSort("date", SortDirection.DESCENDING);	
+        
+	    //Query q = new Query("Post").setFilter(filterPost);
 	    //q.addSort("date", SortDirection.DESCENDING);	    
 
 		
@@ -319,8 +364,15 @@ public class ScoreEndpoint {
 	    // Explosion combinatoire.
 	    // q.addSort("date", SortDirection.DESCENDING);
 	    
-	    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	    PreparedQuery pq = datastore.prepare(q);
+	    
+		
+		
+		
+		//DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	    
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        
+		PreparedQuery pq = ds.prepare(q);
 	    
 	    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
 	    
@@ -335,7 +387,7 @@ public class ScoreEndpoint {
 	    
 	}
     
-	
+	 
 	
 	@ApiMethod(name = "getPost",
 		   httpMethod = ApiMethod.HttpMethod.GET)
@@ -516,6 +568,22 @@ public class ScoreEndpoint {
 	        compteurLikePost.setProperty("valeurCompteur", 0);
 	        datastore.put(compteurLikePost);
 	    }
+	    
+	    
+	    // Création de clés pour que chaque follower puisse retrouver facilement le post : une clé par follower
+  		// Sélection du post en question
+  		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+ 	    Filter filterID = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + i + "@test.fr");  
+ 	    Query query = new Query("User").setFilter(filterID);
+ 	    Entity user = ds.prepare(query).asSingleEntity();
+ 	    
+ 	    ArrayList<String> list_followers = (ArrayList<String>)user.getProperty("followers");
+ 	    
+ 	    for (String follower : list_followers) {
+ 	    	Entity k = new Entity("Post_key");
+ 	    	k.setProperty("key", follower + date_post + " - " + "f" + i + "@test.fr");
+ 	    	ds.put(k);
+ 	    }
 		}
 	}
 	
@@ -534,17 +602,17 @@ public class ScoreEndpoint {
         ArrayList<String> list_follows = new ArrayList<String>();
         ArrayList<String> list_followers = new ArrayList<String>();
         
-        // Ajout de follows + followers (50 dans ce qui ont 200 follows, 25 dans ceux qui en ont 50, et 25 dans ceux 
+        // Ajout de follows + followers (5 dans ce qui ont 200 follows, 5 dans ceux qui en ont 50, et 5 dans ceux 
         // qui en ont 0)
-        for(int i = 1; i <= 50; i++){
+        for(int i = 1; i <= 5; i++){
         	list_follows.add("f" + i + "@test.fr");
         	list_followers.add("f" + i + "@test.fr");
         }
-        for(int j = 200; j <= 225; j++){
+        for(int j = 200; j <= 205; j++){
         	list_follows.add("f" + j + "@test.fr");
         	list_followers.add("f" + j + "@test.fr");
         }
-        for(int k = 250; k <= 275; k++){
+        for(int k = 250; k <= 255; k++){
         	list_follows.add("f" + k + "@test.fr");
         	list_followers.add("f" + k + "@test.fr");
         }
@@ -554,7 +622,7 @@ public class ScoreEndpoint {
         
         
         // Puis on ajoute le user dans les listes de follows et de followers des comptes fictifs
-        for(int i = 1; i <= 50; i++){
+        for(int i = 1; i <= 5; i++){
 	        DatastoreService datastore1 = DatastoreServiceFactory.getDatastoreService();
 	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + i + "@test.fr");  
 	        Query query1 = new Query("User").setFilter(filterUs1);
@@ -573,7 +641,7 @@ public class ScoreEndpoint {
         	
         	datastore1.put(f);
         }
-        for(int j = 200; j <= 225; j++){
+        for(int j = 200; j <= 205; j++){
 	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
 	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + j + "@test.fr");  
 	        Query query1 = new Query("User").setFilter(filterUs1);
@@ -592,7 +660,7 @@ public class ScoreEndpoint {
         	
         	datastore2.put(f);
         }
-        for(int k = 250; k <= 275; k++){
+        for(int k = 250; k <= 255; k++){
 	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
 	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + k + "@test.fr");  
 	        Query query1 = new Query("User").setFilter(filterUs1);

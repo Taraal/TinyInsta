@@ -113,7 +113,8 @@ var MyPost = {
 	    loadList: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+me, 
+	            url: "_ah/api/myApi/v1/mypost",
+	            params: {"name":me}, 
 	            })
 	        .then(function(result) {
 	        	console.log("list:",result)
@@ -127,12 +128,19 @@ var MyPost = {
 	    next: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/"+ me +"?next="+MyPost.nextToken})
+	            url: "_ah/api/myApi/v1/mypost",
+	            params: {"name":me, 
+	            	"next":MyPost.nextToken},
+	            })
 
 	        .then(function(result) {
 	        	console.log("got:",result)
-	        	result.items.map(function(item){MyPost.list.push(item)})
-	            if ('nextPageToken' in result) {
+	        	if(MyPost.nextToken=="") {
+	        		result.items.map(function(item){MyPost.loadList()})
+	        	} else {
+	        	   	result.items.map(function(item){MyPost.list.push(item)})
+	        	}
+	        	if ('nextPageToken' in result) {
 		        	MyPost.nextToken= result.nextPageToken
 	            } else {
 	            	MyPost.nextToken=""
@@ -196,13 +204,14 @@ var PostView = {
 	                  }},"dislike")),
                m("td", m("button", {onclick: function(e) {
             	   //return m.request({
-						//method: "POST",
-						//url: "_ah/api/myApi/v1/NewUsers",
-	     				//})
+					//	method: "POST",
+					//	url: "_ah/api/myApi/v1/NewUsers",
+	     			//	})
 	     				
-	     				//method: "POST",
-						//url: "_ah/api/myApi/v1/NewPosts",
-	     				//})
+	     			//return m.request({
+	     			//	method: "POST",
+					//	url: "_ah/api/myApi/v1/NewPosts",
+	     			//	})
             	   
             	   //return m.request({
  					//	method: "POST",

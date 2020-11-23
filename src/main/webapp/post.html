@@ -116,8 +116,6 @@ var PostForm = {
 		  }
 		}
 
-
-// TODO : Rendre loadList async pour récup les posts dès le début 
 var MyPost = {
 		oninit: fetchEmail(), 
 		listIndex: 0,
@@ -198,7 +196,7 @@ var PostView = {
 						method: "POST",
 						url: "_ah/api/myApi/v1/ajouterLike",
 						params: {"idPost":item.key.id, 
-							"id_post":item.properties.id_post, 
+							"id_post2":item.properties.id_post, 
 							"owner":me},
 					}).then(function(response){
 						item.properties.likec += 1
@@ -212,7 +210,7 @@ var PostView = {
 						method: "POST",
 						url: "_ah/api/myApi/v1/supprimerLike",
 						params: {"idPost":item.key.id, 
-							"id_post":item.properties.id_post, 
+							"id_post2":item.properties.id_post, 
 							"owner":me},
 	     				}).then(function(response){
 							item.properties.likec -= 
@@ -245,7 +243,7 @@ var PostView = {
  						method: "POST",
  						url: "_ah/api/myApi/v1/LikeTest",
  						params: {"idPost":item.key.id, 
-							"id_post":item.properties.id_post},
+							"id_post2":item.properties.id_post},
  	     				})
  	     			
                  }},"del")),

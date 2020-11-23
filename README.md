@@ -75,4 +75,31 @@ Même chose pour src/main/webapp/WEB-INF/appengine-web.xml
     git checkout master
     git merge authentification
     git push
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Projet TinyGram - ClémentPicard ~ Sylouan Corfa ~ Jules Roger ~ Kader Salifou
+
+    url App Engine : https://tinyinsta-295119.appspot.com/
+    url GitHub : https://github.com/Taraal/TinyInsta
+    url interface REST : 
+
+
+Le but de ce projet était de réaliser une version réduite d'un application comme Instagram. Pour cela il nous fallait répondre à certaines contraintes. Tout d'abord, il fallait rendre l'application fonctionnelle selon certains critères.
+
+- [ ] Authentification d'un utilisateur par son compte Google
+- [ ] Créer un post (avec ou sans photo associé) lié à l'utilisateur connecté
+- [ ] Lister les posts des utilisateurs que celui connecté follow
+- [ ] Checher d'autres utilisateurs inscrits sur le site 
+- [ ] Follow un autre utilisateur
+- [ ] Like / Dislike un post
+- [ ] Créer une interface graphique
+
+
+Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler sur le scaling. En effet, pour pouvoir créer une application viable faut programmer de sorte que le nombre d'utilisateurs n'influe pas ou peu sur les temps de réponse du site. Il faut que cela scale ! Nous avons pour cela mis au point des fonctions de benchmark permettant de tester notre TinyGram.
+
+- [ ] Test pour poster un message si on est follow par 10, 100, 500 followers
+- [ ] Combien de likes peut on faire par seconde
+- [ ] Créer une interface graphique
+
+    ScreenShots kinds google app engine database
+    
 

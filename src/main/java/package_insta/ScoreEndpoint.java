@@ -965,4 +965,102 @@ public class ScoreEndpoint {
         }
 	}
 	
+
+	
+	// On accède aux 10, 100, 500 derniers posts que le user follow	
+	@ApiMethod(name = "last10Posts", path = "/myApi/v1/last10Posts",httpMethod = HttpMethod.GET)
+	public Entity last10Posts() {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		int nbMeasures = 30;
+		long time = 0;
+		
+		
+		for(int i=0;i<nbMeasures;i++) {
+			long startTime = System.currentTimeMillis();
+			
+			
+			Query q = new Query("Post").addSort("date", SortDirection.ASCENDING);
+			PreparedQuery pq = datastore.prepare(q);
+			
+			List<Entity> posts = pq.asList(FetchOptions.Builder.withLimit(10));
+			
+			long endTime = System.currentTimeMillis();
+			
+			 time = time + (endTime - startTime);
+			
+		}
+		
+		long finalTime = time / nbMeasures;
+		
+		Entity e = new Entity("TimeMeasured");
+		e.setProperty("timeMilliSec", finalTime);
+		
+		return e;
+		
+	}
+	
+	@ApiMethod(name = "last100Posts", path = "/myApi/v1/last100Posts",httpMethod = HttpMethod.GET)
+	public Entity last100Posts() {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		int nbMeasures = 30;
+		long time = 0;
+		
+		
+		for(int i=0;i<nbMeasures;i++) {
+			long startTime = System.currentTimeMillis();
+			
+			
+			Query q = new Query("Post").addSort("date", SortDirection.ASCENDING);
+			PreparedQuery pq = datastore.prepare(q);
+			
+			List<Entity> posts = pq.asList(FetchOptions.Builder.withLimit(100));
+			
+			long endTime = System.currentTimeMillis();
+			
+			 time = time + (endTime - startTime);
+			
+		}
+		
+		long finalTime = time / nbMeasures;
+		
+		Entity e = new Entity("TimeMeasured");
+		e.setProperty("timeMilliSec", finalTime);
+		
+		return e;
+		
+	}
+	
+	@ApiMethod(name = "last500Posts", path = "/myApi/v1/last500Posts",httpMethod = HttpMethod.GET)
+	public Entity last500Posts() {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		int nbMeasures = 30;
+		long time = 0;
+		
+		
+		for(int i=0;i<nbMeasures;i++) {
+			long startTime = System.currentTimeMillis();
+			
+			Query q = new Query("Post").addSort("date", SortDirection.ASCENDING);
+			PreparedQuery pq = datastore.prepare(q);
+			
+			List<Entity> posts = pq.asList(FetchOptions.Builder.withLimit(500));
+			
+			long endTime = System.currentTimeMillis();
+			
+			 time = time + (endTime - startTime);
+			
+		}
+		
+		long finalTime = time / nbMeasures;
+		
+		Entity e = new Entity("TimeMeasured");
+		e.setProperty("timeMilliSec", finalTime);
+		
+		return e;
+		
+	}
+	
 }

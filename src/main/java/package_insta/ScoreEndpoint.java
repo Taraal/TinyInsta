@@ -980,10 +980,32 @@ public class ScoreEndpoint {
 			long startTime = System.currentTimeMillis();
 			
 			
-			Query q = new Query("Post").addSort("date", SortDirection.ASCENDING);
+			Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, "clemment.picard.44@gmail.com"));
 			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
 			
-			List<Entity> posts = pq.asList(FetchOptions.Builder.withLimit(10));
+			
+			Entity user = result.get(0);
+			
+			ArrayList<Entity> posts = new ArrayList<Entity>();
+			
+			for(String followEmail: (ArrayList<String>)user.getProperty("follows")) {
+
+				Query nq = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, followEmail));
+
+				
+				PreparedQuery npq = datastore.prepare(nq);
+				List<Entity> userPosts = npq.asList(FetchOptions.Builder.withLimit(10));
+				posts.addAll(userPosts);
+			}
+				
+			try {
+			Collections.sort(posts, (o1, o2) -> ((Date)o1.getProperty("date")).compareTo(((Date)o2.getProperty("date"))));
+			}catch(ClassCastException e) {
+				System.out.println(e.getMessage());
+			}
+			
+			Collections.reverse(posts);
 			
 			long endTime = System.currentTimeMillis();
 			
@@ -1012,10 +1034,32 @@ public class ScoreEndpoint {
 			long startTime = System.currentTimeMillis();
 			
 			
-			Query q = new Query("Post").addSort("date", SortDirection.ASCENDING);
+			Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, "clemment.picard.44@gmail.com"));
 			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
 			
-			List<Entity> posts = pq.asList(FetchOptions.Builder.withLimit(100));
+			
+			Entity user = result.get(0);
+			
+			ArrayList<Entity> posts = new ArrayList<Entity>();
+			
+			for(String followEmail: (ArrayList<String>)user.getProperty("follows")) {
+
+				Query nq = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, followEmail));
+
+				
+				PreparedQuery npq = datastore.prepare(nq);
+				List<Entity> userPosts = npq.asList(FetchOptions.Builder.withLimit(100));
+				posts.addAll(userPosts);
+			}
+				
+			try {
+			Collections.sort(posts, (o1, o2) -> ((Date)o1.getProperty("date")).compareTo(((Date)o2.getProperty("date"))));
+			}catch(ClassCastException e) {
+				System.out.println(e.getMessage());
+			}
+			
+			Collections.reverse(posts);
 			
 			long endTime = System.currentTimeMillis();
 			
@@ -1031,7 +1075,6 @@ public class ScoreEndpoint {
 		return e;
 		
 	}
-	
 	@ApiMethod(name = "last500Posts", path = "/myApi/v1/last500Posts",httpMethod = HttpMethod.GET)
 	public Entity last500Posts() {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -1043,10 +1086,33 @@ public class ScoreEndpoint {
 		for(int i=0;i<nbMeasures;i++) {
 			long startTime = System.currentTimeMillis();
 			
-			Query q = new Query("Post").addSort("date", SortDirection.ASCENDING);
-			PreparedQuery pq = datastore.prepare(q);
 			
-			List<Entity> posts = pq.asList(FetchOptions.Builder.withLimit(500));
+			Query q = new Query("User").setFilter(new FilterPredicate("email", FilterOperator.EQUAL, "clemment.picard.44@gmail.com"));
+			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+			
+			
+			Entity user = result.get(0);
+			
+			ArrayList<Entity> posts = new ArrayList<Entity>();
+			
+			for(String followEmail: (ArrayList<String>)user.getProperty("follows")) {
+
+				Query nq = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, followEmail));
+
+				
+				PreparedQuery npq = datastore.prepare(nq);
+				List<Entity> userPosts = npq.asList(FetchOptions.Builder.withLimit(500));
+				posts.addAll(userPosts);
+			}
+				
+			try {
+			Collections.sort(posts, (o1, o2) -> ((Date)o1.getProperty("date")).compareTo(((Date)o2.getProperty("date"))));
+			}catch(ClassCastException e) {
+				System.out.println(e.getMessage());
+			}
+			
+			Collections.reverse(posts);
 			
 			long endTime = System.currentTimeMillis();
 			
@@ -1061,6 +1127,6 @@ public class ScoreEndpoint {
 		
 		return e;
 		
-	}
+	}	
 	
 }

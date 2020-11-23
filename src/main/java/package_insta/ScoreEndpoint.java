@@ -162,11 +162,11 @@ public class ScoreEndpoint {
 	
 	
 	@ApiMethod(name = "ajouterLike", path = "/myApi/v1/ajouterLike", httpMethod = HttpMethod.POST)
-    public void ajouterLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
+    public void ajouterLike(@Named("idPost") String idPost, @Named("id_post2") String id_post2, @Named("owner") String owner) {
 
 		// Sélection du post en question
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);  
+        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post2);  
         Query query3 = new Query("Post").setFilter(filterPost);
         Entity post = ds.prepare(query3).asSingleEntity();
         
@@ -219,11 +219,11 @@ public class ScoreEndpoint {
     }
 	
 	@ApiMethod(name = "supprimerLike", path = "/myApi/v1/supprimerLike", httpMethod = HttpMethod.POST)
-    public void supprimerLike(@Named("idPost") String idPost, @Named("id_post") String id_post, @Named("owner") String owner) {
+    public void supprimerLike(@Named("idPost") String idPost, @Named("id_post2") String id_post2, @Named("owner") String owner) {
 
 		// Sélection du post en question
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);  
+        Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post2);  
         Query query3 = new Query("Post").setFilter(filterPost);
         Entity post = ds.prepare(query3).asSingleEntity();
         
@@ -678,7 +678,7 @@ public class ScoreEndpoint {
 	// On calcule le max de likes en 1 seconde, sur un post choisi complètement aléatoirement
 	
 	@ApiMethod(name = "LikeTest", path = "/myApi/v1/LikeTest", httpMethod = HttpMethod.POST)
-    public void LikeTest(@Named("idPost") String idPost, @Named("id_post") String id_post) {
+    public void LikeTest(@Named("idPost") String idPost, @Named("id_post2") String id_post2) {
 	
 	long startTime = 0;
     long delta = 0;
@@ -686,7 +686,7 @@ public class ScoreEndpoint {
 		
 	// Sélection du post en question
 	DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);  
+    Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post2);  
     Query query3 = new Query("Post").setFilter(filterPost);
     Entity post = ds.prepare(query3).asSingleEntity();
 	

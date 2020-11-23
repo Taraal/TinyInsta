@@ -1,7 +1,7 @@
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/getSession.java
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/HelloAppEngine.java
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/ScoreEndpoint.java
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/UserEndpoint.java
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/PostMessage.java
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/IdTokenVerifier.java
-/home/keason/webApp/TinyInsta/src/main/java/package_insta/backendGoogleUser.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/IdTokenVerifier.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/UserEndpoint.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/getSession.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/PostMessage.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/backendGoogleUser.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/ScoreEndpoint.java
+/home/sylouan/eclipse-workspace/TinyInsta/src/main/java/package_insta/HelloAppEngine.java

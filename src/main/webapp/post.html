@@ -225,6 +225,7 @@ var PostView = {
 						//url: "_ah/api/myApi/v1/NewUsers",
 	     				//})
 	     				
+	     				//return m.request({
 	     				//method: "POST",
 						//url: "_ah/api/myApi/v1/NewPosts",
 	     				//})
@@ -234,6 +235,19 @@ var PostView = {
  					//	url: "_ah/api/myApi/v1/NewFollows",
  					//	params: {"user_id":me},
  	     			//	})
+ 	     			
+ 	     			//return m.request({
+	     			//	method: "POST",
+					//	url: "_ah/api/myApi/v1/PostTest",
+	     			//	})
+	     			
+	     			return m.request({
+ 						method: "POST",
+ 						url: "_ah/api/myApi/v1/LikeTest",
+ 						params: {"idPost":item.key.id, 
+							"id_post":item.properties.id_post},
+ 	     				})
+ 	     			
                  }},"del")),
 	        m('td', m('label', item.properties.body)),
 	        m('td', m('img', {class: 'is-rounded', 'src': item.properties.url})),

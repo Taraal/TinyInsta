@@ -69,26 +69,14 @@ public class ScoreEndpoint {
 		
 		Entity e = new Entity("Post");
 		
-			// On calcule l'écart temporel entre notre post et une date lointaine fixe (an 2300 ici). Ainsi, plus notre 
-			// post est récent, plus cet écart est faible. En basant nos requêtes sur cet écart de temps, les posts les 
-			// plus récents sont donc analysés les premiers, ce qui nous permet de ressortir d'abord les posts les plus 
-			// récents 
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			String dateInString = "2300-01-01 00:00:00.000";
-			Date date = format.parse(dateInString);
-			Date date_today = new Date();
-			
-			String date_post = String.valueOf(date.getTime()-date_today.getTime());
-			while (date_post.length()<15) {
-				date_post = "0"+date_post;
-			}
-			
-			String date_post2 = format.format(date_today);
+			Date date_today = new Date();			
+			String date_post = format.format(date_today);
 			
 			// Propriétés de chaque post
 			e.setProperty("id_post", date_post + " - " + pm.owner);
 			e.setProperty("owner", pm.owner);
-			e.setProperty("date", date_post2);
+			e.setProperty("date", date_post);
 			e.setProperty("url", pm.url);
 			e.setProperty("body", pm.body);
 			ArrayList<String> list_likers = new ArrayList<String>();
@@ -109,24 +97,7 @@ public class ScoreEndpoint {
 	        compteurLikePost.setProperty("nomSousCompteur", "SC" + i);
 	        compteurLikePost.setProperty("valeurCompteur", 0);
 	        datastore.put(compteurLikePost);
-	    }
-	        
-	    
-	    // Création de clés pour que chaque follower puisse retrouver facilement le post : une clé par follower
- 		// Sélection du post en question
- 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-	    Filter filterID = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, pm.owner);  
-	    Query query = new Query("User").setFilter(filterID);
-	    Entity user = ds.prepare(query).asSingleEntity();
-	    
-	    ArrayList<String> list_followers = (ArrayList<String>)user.getProperty("followers");
-	    
-	    for (String follower : list_followers) {
-	    	Entity k = new Entity("Post_key");
-	    	k.setProperty("key", follower + date_post + " - " + pm.owner);
-	    	ds.put(k);
-	    }
-	    
+	    }	    
 	    
 		return e;		
 	}
@@ -481,251 +452,7 @@ public class ScoreEndpoint {
 	
 	
 
-	// On crée 300 users : 200 se follow entre-eux, 50 autres se follows aussi entre-eux, et les 50 derniers ne follow
-	// et ne sont follow par personne. 
-	@ApiMethod(name = "NewUsers", httpMethod = HttpMethod.POST)
-	public void NewUsers() {
-
-		// Create 200 users who follow each other
-		for (int i = 0; i < 200; i++) {
-			Entity e = new Entity("User");
-			e.setProperty("email", "f" + i + "@test.fr");
-			//ArrayList<String> empty_L = new ArrayList<String>();
-			//empty_L.add("");
-			//e.setProperty("followers", empty_L);
-			//e.setProperty("follows", empty_L);			
-			e.setProperty("nom", "last" + i);
-			e.setProperty("prenom", "first" + i);
-			e.setProperty("userName", "first" + i + " " + "last" + i);
-
-			// Create followers and follows
-			ArrayList<String> fset = new ArrayList<String>();
-			fset.add("");
-			for (int j = 0; j < 200; j++) {
-				fset.add("f" + j + "@test.fr");
-			}
-			fset.remove("f" + i + "@test.fr");
-			e.setProperty("followers", fset);
-			e.setProperty("follows", fset);
-
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			datastore.put(e);
-		}
-		
-		// Create 50 users who follow each other
-		for (int i = 200; i < 250; i++) {
-			Entity e = new Entity("User");
-			e.setProperty("email", "f" + i + "@test.fr");
-			//ArrayList<String> empty_L = new ArrayList<String>();
-			//empty_L.add("");
-			//e.setProperty("followers", empty_L);
-			//e.setProperty("follows", empty_L);			
-			e.setProperty("nom", "last" + i);
-			e.setProperty("prenom", "first" + i);
-			e.setProperty("userName", "first" + i + " " + "last" + i);
-
-			// Create followers and follows
-			ArrayList<String> fset = new ArrayList<String>();
-			fset.add("");
-			for (int j = 200; j < 250; j++) {
-				fset.add("f" + j + "@test.fr");
-			}
-			fset.remove("f" + i + "@test.fr");
-			e.setProperty("followers", fset);
-			e.setProperty("follows", fset);
-
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			datastore.put(e);
-		}
-		
-		// Create 50 lonely users, life can be hard
-		for (int i = 250; i < 300; i++) {
-			Entity e = new Entity("User");
-			e.setProperty("email", "f" + i + "@test.fr");
-			//ArrayList<String> empty_L = new ArrayList<String>();
-			//empty_L.add("");
-			//e.setProperty("followers", empty_L);
-			//e.setProperty("follows", empty_L);			
-			e.setProperty("nom", "last" + i);
-			e.setProperty("prenom", "first" + i);
-			e.setProperty("userName", "first" + i + " " + "last" + i);
-
-			// Create 0 followers and 0 follows (sad reacts only)
-			ArrayList<String> fset = new ArrayList<String>();
-			fset.add("");
-			e.setProperty("followers", fset);
-			e.setProperty("follows", fset);
-
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			datastore.put(e);
-		}		
-	}
 	
-	
-	
-	// On crée 300 posts, un pour chacun de nos 300 users fictifs. Pour cela, on reprend exactement le même code que 
-	// pour la fonction de création de post
-	@ApiMethod(name = "NewPosts", httpMethod = HttpMethod.POST)
-	public void NewPosts() throws ParseException {
-		for (int i = 0; i < 300; i++) {
-		
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		
-		Entity e = new Entity("Post");
-		
-			// On calcule l'écart temporel entre notre post et une date lointaine fixe (an 2300 ici). Ainsi, plus notre 
-			// post est récent, plus cet écart est faible. En basant nos requêtes sur cet écart de temps, les posts les 
-			// plus récents sont donc analysés les premiers, ce qui nous permet de ressortir d'abord les posts les plus 
-			// récents 
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			String dateInString = "2300-01-01 00:00:00.000";
-			Date date = format.parse(dateInString);
-			Date date_today = new Date();
-			
-			String date_post = String.valueOf(date.getTime()-date_today.getTime());
-			while (date_post.length()<15) {
-				date_post = "0"+date_post;
-			}
-			
-			String date_post2 = format.format(date_today);
-			
-			// Propriétés de chaque post
-			e.setProperty("id_post", date_post + " - " + "f" + i + "@test.fr");
-			e.setProperty("owner", "f" + i + "@test.fr");
-			e.setProperty("date", date_post2);
-			e.setProperty("url", "http://placehold.it/120x120&text=image" + i);
-			e.setProperty("body", "Hi, my name is first" + i + ", I like potatoes.");
-			ArrayList<String> list_likers = new ArrayList<String>();
-			list_likers.add("");
-			e.setProperty("likers", list_likers);
-			long like = 0;
-			e.setProperty("likec", like);
-			datastore.put(e);
-					
-		Key clePost = datastore.put(e);
-	    Long idPostCree = clePost.getId();
-		    
-	    // Create the like counter
-	    for (int j = 1; j <= 10; j++){
-
-	        Entity compteurLikePost = new Entity("GestionCompteur");
-	        compteurLikePost.setProperty("idPost", idPostCree);
-	        compteurLikePost.setProperty("nomSousCompteur", "SC" + i);
-	        compteurLikePost.setProperty("valeurCompteur", 0);
-	        datastore.put(compteurLikePost);
-	    }
-	    
-	    
-	    // Création de clés pour que chaque follower puisse retrouver facilement le post : une clé par follower
-  		// Sélection du post en question
-  		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
- 	    Filter filterID = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + i + "@test.fr");  
- 	    Query query = new Query("User").setFilter(filterID);
- 	    Entity user = ds.prepare(query).asSingleEntity();
- 	    
- 	    ArrayList<String> list_followers = (ArrayList<String>)user.getProperty("followers");
- 	    
- 	    for (String follower : list_followers) {
- 	    	Entity k = new Entity("Post_key");
- 	    	k.setProperty("key", follower + date_post + " - " + "f" + i + "@test.fr");
- 	    	ds.put(k);
- 	    }
-		}
-	}
-	
-	
-	
-	// On ajoute des follows et followers fictifs (faux comptes précédemment créés) à un de nos comptes pour faire des tests
-	@ApiMethod(name = "NewFollows", path = "/myApi/v1/NewFollows", httpMethod = HttpMethod.POST)
-	public void NewFollows(@Named("user_id") String user_id) {
-		// Sélection du user
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, user_id);  
-        Query query = new Query("User").setFilter(filterUser);
-        Entity user = ds.prepare(query).asSingleEntity();
-        
-        // Liste des follows et followers
-        ArrayList<String> list_follows = new ArrayList<String>();
-        ArrayList<String> list_followers = new ArrayList<String>();
-        
-        // Ajout de follows + followers (5 dans ce qui ont 200 follows, 5 dans ceux qui en ont 50, et 5 dans ceux 
-        // qui en ont 0)
-        for(int i = 1; i <= 5; i++){
-        	list_follows.add("f" + i + "@test.fr");
-        	list_followers.add("f" + i + "@test.fr");
-        }
-        for(int j = 200; j <= 205; j++){
-        	list_follows.add("f" + j + "@test.fr");
-        	list_followers.add("f" + j + "@test.fr");
-        }
-        for(int k = 250; k <= 255; k++){
-        	list_follows.add("f" + k + "@test.fr");
-        	list_followers.add("f" + k + "@test.fr");
-        }
-        user.setProperty("follows", list_follows);
-        user.setProperty("followers", list_followers);
-        ds.put(user);
-        
-        
-        // Puis on ajoute le user dans les listes de follows et de followers des comptes fictifs
-        for(int i = 1; i <= 5; i++){
-	        DatastoreService datastore1 = DatastoreServiceFactory.getDatastoreService();
-	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + i + "@test.fr");  
-	        Query query1 = new Query("User").setFilter(filterUs1);
-	        Entity f = ds.prepare(query1).asSingleEntity();
-	        
-	        // Liste des follows et followers
-	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
-	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
-	        
-	        // Ajout du user en questio)n aux listes
-	        list_follows1.add(user_id);
-        	list_followers1.add(user_id);
-        	
-        	f.setProperty("follows", list_follows1);
-            f.setProperty("followers", list_followers1);
-        	
-        	datastore1.put(f);
-        }
-        for(int j = 200; j <= 205; j++){
-	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
-	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + j + "@test.fr");  
-	        Query query1 = new Query("User").setFilter(filterUs1);
-	        Entity f = ds.prepare(query1).asSingleEntity();
-	        
-	        // Liste des follows et followers
-	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
-	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
-	        
-	        // Ajout du user en question aux listes
-	        list_follows1.add(user_id);
-        	list_followers1.add(user_id);
-        	
-        	f.setProperty("follows", list_follows1);
-            f.setProperty("followers", list_followers1);
-        	
-        	datastore2.put(f);
-        }
-        for(int k = 250; k <= 255; k++){
-	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
-	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + k + "@test.fr");  
-	        Query query1 = new Query("User").setFilter(filterUs1);
-	        Entity f = ds.prepare(query1).asSingleEntity();
-	        
-	        // Liste des follows et followers
-	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
-	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
-	        
-	        // Ajout du user en question aux listes
-	        list_follows1.add(user_id);
-        	list_followers1.add(user_id);
-        	
-        	f.setProperty("follows", list_follows1);
-            f.setProperty("followers", list_followers1);
-        	
-        	datastore2.put(f);
-        }
-	}
 
 	
 	
@@ -824,4 +551,418 @@ public class ScoreEndpoint {
 		txn.commit();
 		
 	}
+	
+	
+	
+//////////////////////////////////////////// BENCHMARK \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	
+	
+	// On crée un user avec 10 followers, un avec 100 followers et un dernier avec 500 followers
+	
+	@ApiMethod(name = "UserTest", path = "/myApi/v1/UserTest", httpMethod = HttpMethod.POST)
+	public void UserTest() {
+
+		// User 10 followers
+		Entity e = new Entity("User");
+		e.setProperty("email", "u10@test.fr");		
+		e.setProperty("nom", "u10");
+		e.setProperty("prenom", "u10");
+		e.setProperty("userName", "u10 u10");
+		// Create followers and follows
+		ArrayList<String> fset = new ArrayList<String>();
+		fset.add("");
+		for (int j = 1; j <= 10; j++) {
+			fset.add("f" + j + "@test.fr");
+		}
+		e.setProperty("followers", fset);
+		// Send user to datastore
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		datastore.put(e);
+	
+		// User 100 followers
+		Entity f = new Entity("User");
+		f.setProperty("email", "u100@test.fr");		
+		f.setProperty("nom", "u100");
+		f.setProperty("prenom", "u100");
+		f.setProperty("userName", "u100 u100");
+		// Create followers and follows
+		ArrayList<String> fset2 = new ArrayList<String>();
+		fset2.add("");
+		for (int j = 1; j <= 100; j++) {
+			fset2.add("f" + j + "@test.fr");
+		}
+		f.setProperty("followers", fset2);
+		// Send user to datastore
+		datastore.put(f);
+		
+		// User 500 followers
+		Entity g = new Entity("User");
+		g.setProperty("email", "u500@test.fr");		
+		g.setProperty("nom", "u500");
+		g.setProperty("prenom", "u500");
+		g.setProperty("userName", "u500 u500");
+		// Create followers and follows
+		ArrayList<String> fset3 = new ArrayList<String>();
+		fset3.add("");
+		for (int j = 1; j <= 500; j++) {
+			fset3.add("f" + j + "@test.fr");
+		}
+		g.setProperty("followers", fset3);
+		// Send user to datastore
+		datastore.put(g);
+	}
+	
+
+	
+	// On calcule le temps nécessaire pour créer un post avec chacun des 3 comptes test
+	
+	@ApiMethod(name = "PostTest", path = "/myApi/v1/PostTest", httpMethod = HttpMethod.POST)
+	public void PostTest() {
+	
+	String userTest = "u500@test.fr";	
+	
+	long startTime = 0;
+    long delta = 0;
+    long endTime = 0;
+		
+	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	
+	for(int j=1 ; j<=30 ; j++) {
+	 
+		startTime = System.currentTimeMillis();
+		
+		Entity e = new Entity("Post");
+	
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		Date date_today = new Date();
+		String date_post = format.format(date_today);
+		
+		// Propriétés de chaque post
+		e.setProperty("id_post", date_post + " - " + userTest);
+		e.setProperty("owner", userTest);
+		e.setProperty("date", date_post);
+		e.setProperty("url", "http://test.com");
+		e.setProperty("body", "Ceci est un test. Restez tous calmes.");
+		ArrayList<String> list_likers = new ArrayList<String>();
+		list_likers.add("");
+		e.setProperty("likers", list_likers);
+		long like = 0;
+		e.setProperty("likec", like);
+		datastore.put(e);
+				
+		Key clePost = datastore.put(e);
+	    Long idPostCree = clePost.getId();
+		    
+	    // Create the like counter
+	    for (int i = 1; i <= 10; i++){
+	
+	        Entity compteurLikePost = new Entity("GestionCompteur");
+	        compteurLikePost.setProperty("idPost", idPostCree);
+	        compteurLikePost.setProperty("nomSousCompteur", "SC" + i);
+	        compteurLikePost.setProperty("valeurCompteur", 0);
+	        datastore.put(compteurLikePost);
+	    }
+    
+	    endTime = System.currentTimeMillis();
+        delta += endTime-startTime;
+	}
+	
+	Entity result = new Entity("ResultPost");
+	result.setProperty("user", userTest);
+	result.setProperty("time", delta/30);
+	datastore.put(result);
+	}
+	
+	
+
+	// On calcule le max de likes en 1 seconde, sur un post choisi complètement aléatoirement
+	
+	@ApiMethod(name = "LikeTest", path = "/myApi/v1/LikeTest", httpMethod = HttpMethod.POST)
+    public void LikeTest(@Named("idPost") String idPost, @Named("id_post") String id_post) {
+	
+	long startTime = 0;
+    long delta = 0;
+    long endTime = 0;
+		
+	// Sélection du post en question
+	DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    Filter filterPost = new Query.FilterPredicate("id_post", Query.FilterOperator.EQUAL, id_post);  
+    Query query3 = new Query("Post").setFilter(filterPost);
+    Entity post = ds.prepare(query3).asSingleEntity();
+	
+    for(int i=1 ; i<=300 ; i++) {
+    	
+    	startTime = System.currentTimeMillis();
+    
+		// Choix random d'un sous-compteur de likes du post
+	    int nbCompteurs = 10;
+	    int compteurChoisi = (int)(Math.random() * nbCompteurs + 1);
+	    String nomSousCompteurChoisi = "SC" + compteurChoisi;
+	    	        
+	    // Conversion de l'id en long pour la suite
+	    long idPost2 = Long.parseLong(idPost);
+	
+	    // Sélection du sous-compteur choisi
+	    Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+	    Filter filterCPT = new Query.FilterPredicate("nomSousCompteur", Query.FilterOperator.EQUAL, nomSousCompteurChoisi);
+	    CompositeFilter filterFus = CompositeFilterOperator.and(filterID, filterCPT);
+	    Query query = new Query("GestionCompteur").setFilter(filterFus);
+	    Entity gestLikesPost = ds.prepare(query).asSingleEntity();
+	
+	    // +1 sur sous-compteur choisi
+	    Long tmpLike = (Long)gestLikesPost.getProperty("valeurCompteur");
+	    gestLikesPost.setProperty("valeurCompteur", tmpLike + 1);
+	    ds.put(gestLikesPost);
+    	
+    	endTime = System.currentTimeMillis();
+        delta += endTime-startTime;
+	}
+    
+    // Sélection de l'ensemble des sous-compteurs du post
+    long idPost2 = Long.parseLong(idPost);
+    Filter filterID = new Query.FilterPredicate("idPost", Query.FilterOperator.EQUAL, idPost2);
+    Query query2 = new Query("GestionCompteur").setFilter(filterID);
+    PreparedQuery pq = ds.prepare(query2);
+    List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+
+    long totalLikesPost = 0;
+
+    // Somme des sous-compteurs
+    for (Entity r : result){
+        totalLikesPost += (Long)(r.getProperty("valeurCompteur"));
+    }
+         	
+    // Actualisation du compteur global de likes
+    post.setProperty("likec", totalLikesPost);
+    
+    double likes = ((double)totalLikesPost/delta)*1000;
+    
+	Entity res = new Entity("ResultLikes");
+	res.setProperty("nb_likes", likes);
+	ds.put(res);
+	 
+	}
+	
+	
+//////////////////////////////////////////// BONUS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	
+	
+	// On crée 300 users : 200 se follow entre-eux, 50 autres se follows aussi entre-eux, et les 50 derniers ne follow
+	// et ne sont follow par personne. 
+	@ApiMethod(name = "NewUsers", httpMethod = HttpMethod.POST)
+	public void NewUsers() {
+
+		// Create 200 users who follow each other
+		for (int i = 0; i < 200; i++) {
+			Entity e = new Entity("User");
+			e.setProperty("email", "f" + i + "@test.fr");
+			//ArrayList<String> empty_L = new ArrayList<String>();
+			//empty_L.add("");
+			//e.setProperty("followers", empty_L);
+			//e.setProperty("follows", empty_L);			
+			e.setProperty("nom", "last" + i);
+			e.setProperty("prenom", "first" + i);
+			e.setProperty("userName", "first" + i + " " + "last" + i);
+
+			// Create followers and follows
+			ArrayList<String> fset = new ArrayList<String>();
+			fset.add("");
+			for (int j = 0; j < 200; j++) {
+				fset.add("f" + j + "@test.fr");
+			}
+			fset.remove("f" + i + "@test.fr");
+			e.setProperty("followers", fset);
+			e.setProperty("follows", fset);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			datastore.put(e);
+		}
+		
+		// Create 50 users who follow each other
+		for (int i = 200; i < 250; i++) {
+			Entity e = new Entity("User");
+			e.setProperty("email", "f" + i + "@test.fr");
+			//ArrayList<String> empty_L = new ArrayList<String>();
+			//empty_L.add("");
+			//e.setProperty("followers", empty_L);
+			//e.setProperty("follows", empty_L);			
+			e.setProperty("nom", "last" + i);
+			e.setProperty("prenom", "first" + i);
+			e.setProperty("userName", "first" + i + " " + "last" + i);
+
+			// Create followers and follows
+			ArrayList<String> fset = new ArrayList<String>();
+			fset.add("");
+			for (int j = 200; j < 250; j++) {
+				fset.add("f" + j + "@test.fr");
+			}
+			fset.remove("f" + i + "@test.fr");
+			e.setProperty("followers", fset);
+			e.setProperty("follows", fset);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			datastore.put(e);
+		}
+		
+		// Create 50 lonely users, life can be hard
+		for (int i = 250; i < 300; i++) {
+			Entity e = new Entity("User");
+			e.setProperty("email", "f" + i + "@test.fr");
+			//ArrayList<String> empty_L = new ArrayList<String>();
+			//empty_L.add("");
+			//e.setProperty("followers", empty_L);
+			//e.setProperty("follows", empty_L);			
+			e.setProperty("nom", "last" + i);
+			e.setProperty("prenom", "first" + i);
+			e.setProperty("userName", "first" + i + " " + "last" + i);
+
+			// Create 0 followers and 0 follows (sad reacts only)
+			ArrayList<String> fset = new ArrayList<String>();
+			fset.add("");
+			e.setProperty("followers", fset);
+			e.setProperty("follows", fset);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			datastore.put(e);
+		}		
+	}
+	
+	
+	
+	// On crée 300 posts, un pour chacun de nos 300 users fictifs. Pour cela, on reprend exactement le même code que 
+	// pour la fonction de création de post
+	@ApiMethod(name = "NewPosts", httpMethod = HttpMethod.POST)
+	public void NewPosts() throws ParseException {
+		for (int i = 1; i <= 500; i++) {
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Entity e = new Entity("Post");
+		
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			Date date_today = new Date();			
+			String date_post = format.format(date_today);
+			
+			// Propriétés de chaque post
+			e.setProperty("id_post", date_post + " - " + "f" + i + "@test.fr");
+			e.setProperty("owner", "f" + i + "@test.fr");
+			e.setProperty("date", date_post);
+			e.setProperty("url", "http://placehold.it/120x120&text=image" + i);
+			e.setProperty("body", "Hi, my name is first" + i + ", I like potatoes.");
+			ArrayList<String> list_likers = new ArrayList<String>();
+			list_likers.add("");
+			e.setProperty("likers", list_likers);
+			long like = 0;
+			e.setProperty("likec", like);
+			datastore.put(e);
+					
+		Key clePost = datastore.put(e);
+	    Long idPostCree = clePost.getId();
+		    
+	    // Create the like counter
+	    for (int j = 1; j <= 10; j++){
+
+	        Entity compteurLikePost = new Entity("GestionCompteur");
+	        compteurLikePost.setProperty("idPost", idPostCree);
+	        compteurLikePost.setProperty("nomSousCompteur", "SC" + j);
+	        compteurLikePost.setProperty("valeurCompteur", 0);
+	        datastore.put(compteurLikePost);
+	    }
+		}
+	}
+	
+	
+	
+	// On ajoute des follows et followers fictifs (faux comptes précédemment créés) à un de nos comptes pour faire des tests
+	@ApiMethod(name = "NewFollows", path = "/myApi/v1/NewFollows", httpMethod = HttpMethod.POST)
+	public void NewFollows(@Named("user_id") String user_id) {
+		// Sélection du user
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Filter filterUser = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, user_id);  
+        Query query = new Query("User").setFilter(filterUser);
+        Entity user = ds.prepare(query).asSingleEntity();
+        
+        // Liste des follows et followers
+        ArrayList<String> list_follows = new ArrayList<String>();
+        ArrayList<String> list_followers = new ArrayList<String>();
+        
+        // Ajout de follows + followers (5 dans ce qui ont 200 follows, 5 dans ceux qui en ont 50, et 5 dans ceux 
+        // qui en ont 0)
+        for(int i = 1; i <= 5; i++){
+        	list_follows.add("f" + i + "@test.fr");
+        	list_followers.add("f" + i + "@test.fr");
+        }
+        for(int j = 200; j <= 205; j++){
+        	list_follows.add("f" + j + "@test.fr");
+        	list_followers.add("f" + j + "@test.fr");
+        }
+        for(int k = 250; k <= 255; k++){
+        	list_follows.add("f" + k + "@test.fr");
+        	list_followers.add("f" + k + "@test.fr");
+        }
+        user.setProperty("follows", list_follows);
+        user.setProperty("followers", list_followers);
+        ds.put(user);
+        
+        
+        // Puis on ajoute le user dans les listes de follows et de followers des comptes fictifs
+        for(int i = 1; i <= 5; i++){
+	        DatastoreService datastore1 = DatastoreServiceFactory.getDatastoreService();
+	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + i + "@test.fr");  
+	        Query query1 = new Query("User").setFilter(filterUs1);
+	        Entity f = ds.prepare(query1).asSingleEntity();
+	        
+	        // Liste des follows et followers
+	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
+	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
+	        
+	        // Ajout du user en questio)n aux listes
+	        list_follows1.add(user_id);
+        	list_followers1.add(user_id);
+        	
+        	f.setProperty("follows", list_follows1);
+            f.setProperty("followers", list_followers1);
+        	
+        	datastore1.put(f);
+        }
+        for(int j = 200; j <= 205; j++){
+	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + j + "@test.fr");  
+	        Query query1 = new Query("User").setFilter(filterUs1);
+	        Entity f = ds.prepare(query1).asSingleEntity();
+	        
+	        // Liste des follows et followers
+	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
+	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
+	        
+	        // Ajout du user en question aux listes
+	        list_follows1.add(user_id);
+        	list_followers1.add(user_id);
+        	
+        	f.setProperty("follows", list_follows1);
+            f.setProperty("followers", list_followers1);
+        	
+        	datastore2.put(f);
+        }
+        for(int k = 250; k <= 255; k++){
+	        DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+	        Filter filterUs1 = new Query.FilterPredicate("email", Query.FilterOperator.EQUAL, "f" + k + "@test.fr");  
+	        Query query1 = new Query("User").setFilter(filterUs1);
+	        Entity f = ds.prepare(query1).asSingleEntity();
+	        
+	        // Liste des follows et followers
+	        ArrayList<String> list_follows1 = (ArrayList<String>)f.getProperty("follows");
+	        ArrayList<String> list_followers1 = (ArrayList<String>)f.getProperty("followers");
+	        
+	        // Ajout du user en question aux listes
+	        list_follows1.add(user_id);
+        	list_followers1.add(user_id);
+        	
+        	f.setProperty("follows", list_follows1);
+            f.setProperty("followers", list_followers1);
+        	
+        	datastore2.put(f);
+        }
+	}
+	
 }

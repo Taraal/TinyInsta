@@ -1,4 +1,4 @@
-Projet TinyGram - ClémentPicard ~ Sylouan Corfa ~ Jules Roger ~ Kader Salifou
+Projet TinyGram - Clément Picard ~ Sylouan Corfa ~ Jules Roger ~ Kader Salifou
 ==================
 
 Application Instagram-like propulsée par Google App Engine
@@ -42,5 +42,7 @@ Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler 
 
 ## Kinds utilisés dans notre appli
 
-
-
+![Users](screens_kinds/user.png)
+![Compteurs](screens_kinds/cpt.png)
+![Posts](screens_kinds/post.png)
+![Sessions](screens_kinds/session.png)

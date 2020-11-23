@@ -136,7 +136,8 @@ var MyPost = {
 	        .then(function(result) {
 	        	console.log("got:",result)
 	        	if(MyPost.nextToken=="") {
-	        		result.items.map(function(item){MyPost.loadList()})
+	        		//MyPost.loadList()
+	        		//result.items.map(function(item){MyPost.loadList()})
 	        	} else {
 	        	   	result.items.map(function(item){MyPost.list.push(item)})
 	        	}

@@ -307,7 +307,7 @@ public class ScoreEndpoint {
 	
 	
 	@ApiMethod(name = "mypost", path = "/myApi/v1/mypost", httpMethod = HttpMethod.GET)
-	public CollectionResponse<Entity> mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
+	public List<Entity>  mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
 
 		//Filter filterUser = new Query.FilterPredicate("id_post".substring(19, "id_post".length())), Query.FilterOperator.EQUAL, user_id);  
         //Query query = new Query("User").setFilter(filterUser);
@@ -341,11 +341,21 @@ public class ScoreEndpoint {
             throw new NullPointerException("No follow found");
         }
 		
-	    //Filter filterPost = new Query.FilterPredicate("owner", Query.FilterOperator.IN, list_follows);  
-	    
-        Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.IN, list_follows));
-        q.addSort("date", SortDirection.DESCENDING);	
+
+		
+		Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.IN, list_follows));
+		PreparedQuery pq = datastore.prepare(q);
+		
+		List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
         
+        
+	    //Filter filterPost = new Query.FilterPredicate("owner", Query.FilterOperator.IN, list_follows);  
+        /*
+        Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.IN, list_follows));
+        q.addSort("date", SortDirection.DESCENDING);*/
+        
+        
+        return result;
 	    //Query q = new Query("Post").setFilter(filterPost);
 	    //q.addSort("date", SortDirection.DESCENDING);	    
 
@@ -370,7 +380,7 @@ public class ScoreEndpoint {
 		
 		//DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	    
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+       /* DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         
 		PreparedQuery pq = ds.prepare(q);
 	    
@@ -383,10 +393,26 @@ public class ScoreEndpoint {
 	    QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
 	    cursorString = results.getCursor().toWebSafeString();
 	    
-	    return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
+	    return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();*/
 	    
 	}
     
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	 
 	
 	@ApiMethod(name = "getPost",

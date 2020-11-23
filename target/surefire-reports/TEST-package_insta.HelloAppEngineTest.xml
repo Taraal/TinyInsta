@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="package_insta.HelloAppEngineTest" time="0.206" tests="2" errors="0" skipped="0" failures="0">
+=======
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="package_insta.HelloAppEngineTest" time="0.355" tests="2" errors="0" skipped="0" failures="0">
+>>>>>>> interfaceGraph
   <properties>
     <property name="sun.desktop" value="gnome"/>
     <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
@@ -17,11 +21,11 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="FR"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-11-openjdk-amd64/lib"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean package"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install"/>
     <property name="jdk.debug" value="release"/>
     <property name="maven.home" value="/usr/share/maven"/>
     <property name="sun.cpu.endian" value="little"/>
-    <property name="user.home" value="/home/sylouan"/>
+    <property name="user.home" value="/home/keason"/>
     <property name="user.language" value="fr"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="java.version.date" value="2020-11-04"/>
@@ -33,8 +37,8 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="java.runtime.version" value="11.0.9.1+1-Ubuntu-0ubuntu1.20.04"/>
-    <property name="user.name" value="sylouan"/>
+    <property name="java.runtime.version" value="11.0.9.1+1-Ubuntu-0ubuntu1.18.04"/>
+    <property name="user.name" value="keason"/>
     <property name="path.separator" value=":"/>
     <property name="securerandom.source" value="file:/dev/./urandom"/>
     <property name="os.version" value="5.4.0-54-generic"/>
@@ -45,21 +49,25 @@
     <property name="java.vendor.url.bug" value="https://bugs.launchpad.net/ubuntu/+source/openjdk-lts"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="java.version" value="11.0.9.1"/>
-    <property name="user.dir" value="/home/sylouan/eclipse-workspace/TinyInsta"/>
+    <property name="user.dir" value="/home/keason/webApp/TinyInsta"/>
     <property name="os.arch" value="amd64"/>
-    <property name="maven.multiModuleProjectDirectory" value="/home/sylouan/eclipse-workspace/TinyInsta"/>
+    <property name="maven.multiModuleProjectDirectory" value="/home/keason/webApp/TinyInsta"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
     <property name="sun.os.patch.level" value="unknown"/>
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib"/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="java.vendor" value="Ubuntu"/>
-    <property name="java.vm.version" value="11.0.9.1+1-Ubuntu-0ubuntu1.20.04"/>
+    <property name="java.vm.version" value="11.0.9.1+1-Ubuntu-0ubuntu1.18.04"/>
     <property name="classworlds.conf" value="/usr/share/maven/bin/m2.conf"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="library.jansi.path" value="/usr/share/maven/lib/jansi-native"/>
     <property name="java.class.version" value="55.0"/>
   </properties>
+<<<<<<< HEAD
   <testcase name="helloInfoTest" classname="package_insta.HelloAppEngineTest" time="0.125"/>
+=======
+  <testcase name="helloInfoTest" classname="package_insta.HelloAppEngineTest" time="0.208"/>
+>>>>>>> interfaceGraph
   <testcase name="doGetWritesResponse" classname="package_insta.HelloAppEngineTest" time="0.004"/>
 </testsuite>

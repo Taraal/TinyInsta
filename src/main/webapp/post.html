@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Post Example</title>
+<title>TinyGram</title>
 <meta charset="utf-8">
 
 
@@ -17,11 +17,23 @@
     <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
 
 
+<style>
+
+
+.putOpacity {
+  opacity: 0.8;
+}
+
+
+</style>
+
+
 </head>
 <body>
 	
 		
 <script>	
+
 
 function getPosts(email){
 
@@ -60,7 +72,7 @@ var SearchBox = {
 		      }}, 
 		      [
 		    	m('div', {class:'field'},[
-		         m("label", {class:'label'},"Search"),
+		         //m("label", {class:'label'},"Search"),
 		         m('div',{class:'control'}, m("input[type=text]", {
 		          class:'input is-rounded',
 		          placeholder:"Search for anyone ...",
@@ -69,18 +81,6 @@ var SearchBox = {
 		    ])
 		  }
 		}
-
-function follow(){
-	m.request({
-		method:"PUT",
-		url: "_ah/api/myApi/v1/follow/:follower/:clem",
-		params:{
-			follower: "sylouan.corfa@gmail.com",
-			clem: "t4raal@gmail.com"
-		}
-	});
-}
-
 
 
 
@@ -97,21 +97,21 @@ var PostForm = {
 		      }}, 
 		      [
 		    	m('div', {class:'field'},[
-		         m("label", {class:'label'},"URL"),
+		         m("label", {class:'label'},""),
 		         m('div',{class:'control'}, m("input[type=text]", {
 		          class:'input is-rounded',
-		          placeholder:"Your url",
+		          placeholder:"Url...",
 		             oninput: function(e) {PostForm.url = e.target.value}})),
 //		         m("img",{"src":this.url}),
 		        ]),
 		      m('div',{class:'field'},[
-		    	  m("label", {class: 'label'},"Body"),
+		    	  m("label", {class: 'label'},""),
 		          m('div',{class:'control'},m("input[type=textarea]", {
 		        class:'textarea',
-		        placeholder:"your text",
+		        placeholder:"Express yourself",
 		        oninput: function(e) { PostForm.body = e.target.value }})),
 		        ]),
-		      m('div',{class:'control'},m("button[type=submit]", {class:'button is-link'},"Post")),
+		      m('div',{class:'control'},m("button[type=submit]", {class:'button is-ghost'},"Post")),
 		    ])
 		  }
 		}
@@ -179,16 +179,16 @@ var PostView = {
   oninit: MyPost.loadList,
   view: function() {
    	return m('div', [
-	  m('div',{class:'subtitle'},"My Posts"),
-	  m('table', {class:'table is-striped',"table":"is-striped"},[
+	  m('div',{class:'subtitle has-text-centered'},"Posts"),
+	  m('table', {class:'table is-fullwidth is-striped',"table":"is-striped"},[
 	    m('tr', [
-		  m('th', {width:"50px"}, "Like"),
-		  m('th', {width:"50px"}, "Dislike"),
-		  m('th', {width:"50px"}, "Del"),
-	      m('th', {width:"50px"}, "Bodys"),
-	      m('th', {width:"50px"}, "Urls"),
-	      m('th', {width:"50px"}, "Like"),
-	      m('th', {width:"50px"}, "Follow"),
+	    	  m('th',{width:"70px"},"Like"),
+			  m('th',{width:"70px"},"Dislike"),
+			  m('th',{width:"70px"}, "Del"),
+		      m('th', "Bodys"),
+		      m('th',  "Urls"),
+		      m('th',{width:"70px"},  "Like"),
+		      m('th',{width:"70px"}, "Follow"),
 	    ]),
 	    MyPost.list.slice(0, MyPost.listIndex).map(function(item) {
 		      return m("tr", [
@@ -215,14 +215,13 @@ var PostView = {
 	                  }},"dislike")),
                m("td", m("button", {onclick: function(e) {
             	   //return m.request({
-					//	method: "POST",
-					//	url: "_ah/api/myApi/v1/NewUsers",
-	     			//	})
+						//method: "POST",
+						//url: "_ah/api/myApi/v1/NewUsers",
+	     				//})
 	     				
-	     			//return m.request({
-	     			//	method: "POST",
-					//	url: "_ah/api/myApi/v1/NewPosts",
-	     			//	})
+	     				//method: "POST",
+						//url: "_ah/api/myApi/v1/NewPosts",
+	     				//})
             	   
             	   //return m.request({
  					//	method: "POST",
@@ -248,7 +247,7 @@ var PostView = {
 	    ])}),
 //	    m("div", isError ? "An error occurred" : "Saved"),
 	    m('button',{
-		      class: 'button is-link',
+		      class: 'button is-ghost',
 		      onclick: function(e) {MyPost.next()}
 		      },
 		  "Next"),
@@ -262,7 +261,7 @@ function signOut() {
     auth2.signOut().then(function () {
       console.log('User signed out.');
     });
-    window.location.replace("byebye.html");
+    //window.location.replace("byebye.html");
   }
 
   function onLoad() {
@@ -274,7 +273,7 @@ function signOut() {
   
 var Hello = {
    view: function() {
-   	return m('div', {class:'container'}, [
+   	return m('div', [
    		
    		/*m.element('header',{
    		  controller:function(){},
@@ -284,26 +283,69 @@ var Hello = {
    				])
    		  }
    		})*/
-   		   
-           m("h1", {class: 'title'}, 'TinyGram'),
-		   
+   		   m("nav", {class:"navbar is-fixed-top is-info  ", role:"navigation"}, [
+   			   
+   		       m("div", {class:"navbar-menu"}, [
+   		    	m("div", {class:"navbar-start"}, [
+   		    		
+   		    		//m("p", {class: 'navbar-item is-size-4'}, 'TinyGram'),
+   		    		m("img", {src:"/logo1.png",width:"90"}),
+   		    		m("p", {class: 'navbar-item'}, '|'),
+   		    		m("a", {class: 'navbar-item', href:"https://tinyinsta-295119.appspot.com/post.html"}, 'Home'),
+   		    		m("p", {class: 'navbar-item'}, '        '),
+   		    		m("p", {class: 'navbar-item'}, m('div',m(SearchBox))),
 
-           
-           m("button", {onclick: function() {
-        	   signOut();
-        	   window.location.replace("authen.html");
-        	   
-           }}, "Log Out"),
-           
-           m('hr.border.my-8'),
-           m("p", {class: 'tile'}, m('div',{class:'tile is-child box'},m(SearchBox))),
-           
-           m('hr.border.my-8'),
-           
-           m('div',{class: 'tile is-ancestor'},[
-               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PostForm))),
-        	   m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PostView))),
-           ])
+   		    		
+   		    		]),
+   		    	   
+   		    	   
+   		    	   m("div", {class:"navbar-end"}, [
+   		    		   
+   		    		m("div", {class:"navbar-item"}, [
+   		    			m("div", {class:"buttons"}, [
+   		    				
+   		    				m("button", {class: 'button is-ghost', onclick: function() {
+   		   		        	   signOut();
+   		   		        	   window.location.replace("authen.html");
+   		   		        	   
+   		   		           }}, "Log Out"),
+   		    		  	   	]),
+   			    		
+   		    	  	]),
+   		    		
+   	   	   		   ]),   
+   	   		   ]),
+   		   ]),
+   		   
+   		m('section', {class: 'hero has-background-grey-lighter is-fullheight putOpacity'},[
+   			m('div', {class: 'hero-head'},[
+   				
+   				m('div', {class: 'container '},[
+   					m('div',{class:"block"}),
+
+   		      		m('div', {class:'section '}, [
+   		              
+   		              m('div',{class: 'tile is-ancestor '},[
+   		                  m("div", {class: 'tile '}, m('div',{class:'tile is-child box'},m(PostForm))),
+   		              ]),
+
+   		           m('div',{class:"block"}),
+   		              
+   		              m('div',{class: 'tile is-ancestor'},[
+   		           	   m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PostView))),
+   		              ])
+   		           
+   		           
+   		             
+   		          ]),
+   		          
+   		          
+   		    
+   		          
+   		   		])
+   	   		])
+   		])   
+       
        ])
    }
 }

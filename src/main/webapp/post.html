@@ -67,12 +67,10 @@ var SearchBox = {
 		    	url = 'queryResult.html?query='+SearchBox.search;
 		    	
 		    	window.location = encodeURI(url);
-		    	//mySearch.postSearch();
 
 		      }}, 
 		      [
 		    	m('div', {class:'field'},[
-		         //m("label", {class:'label'},"Search"),
 		         m('div',{class:'control'}, m("input[type=text]", {
 		          class:'input is-rounded',
 		          placeholder:"Search for anyone ...",
@@ -102,7 +100,6 @@ var PostForm = {
 		          class:'input is-rounded',
 		          placeholder:"Url...",
 		             oninput: function(e) {PostForm.url = e.target.value}})),
-//		         m("img",{"src":this.url}),
 		        ]),
 		      m('div',{class:'field'},[
 		    	  m("label", {class: 'label'},""),
@@ -218,27 +215,7 @@ var PostView = {
 						})
 	                  }},"dislike")),
                m("td", m("button", {onclick: function(e) {
-            	   //return m.request({
-						//method: "POST",
-						//url: "_ah/api/myApi/v1/NewUsers",
-	     				//})
-	     				
-	     				//return m.request({
-	     				//method: "POST",
-						//url: "_ah/api/myApi/v1/NewPosts",
-	     				//})
-            	   
-            	   //return m.request({
- 					//	method: "POST",
- 					//	url: "_ah/api/myApi/v1/NewFollows",
- 					//	params: {"user_id":me},
- 	     			//	})
- 	     			
- 	     			//return m.request({
-	     			//	method: "POST",
-					//	url: "_ah/api/myApi/v1/PostTest",
-	     			//	})
-	     			
+            	  
 	     			return m.request({
  						method: "POST",
  						url: "_ah/api/myApi/v1/LikeTest",
@@ -263,7 +240,6 @@ var PostView = {
 				})
                  }},"Follow")),
 	    ])}),
-//	    m("div", isError ? "An error occurred" : "Saved"),
 	    m('button',{
 		      class: 'button is-ghost',
 		      onclick: function(e) {MyPost.next()}
@@ -279,7 +255,6 @@ function signOut() {
     auth2.signOut().then(function () {
       console.log('User signed out.');
     });
-    //window.location.replace("byebye.html");
   }
 
   function onLoad() {
@@ -293,20 +268,11 @@ var Hello = {
    view: function() {
    	return m('div', [
    		
-   		/*m.element('header',{
-   		  controller:function(){},
-   		  view: function(ctrl){
-   		    return m('$header#header', [
-   					m('h1', 'todos')
-   				])
-   		  }
-   		})*/
    		   m("nav", {class:"navbar is-fixed-top is-info  ", role:"navigation"}, [
    			   
    		       m("div", {class:"navbar-menu"}, [
    		    	m("div", {class:"navbar-start"}, [
    		    		
-   		    		//m("p", {class: 'navbar-item is-size-4'}, 'TinyGram'),
    		    		m("img", {src:"/logo1.png",width:"90"}),
    		    		m("p", {class: 'navbar-item'}, '|'),
    		    		m("a", {class: 'navbar-item', href:"https://tinyinsta-295119.appspot.com/post.html"}, 'Home'),

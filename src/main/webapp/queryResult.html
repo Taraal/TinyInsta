@@ -33,12 +33,10 @@ var SearchBox = {
 		    	url = 'queryResult.html?query='+SearchBox.search;
 		    	
 		    	window.location = encodeURI(url);
-		    	//mySearch.postSearch();
 
 		      }}, 
 		      [
 		    	m('div', {class:'field'},[
-		         //m("label", {class:'label'},"Search"),
 		         m('div',{class:'control'}, m("input[type=text]", {
 		          class:'input is-rounded',
 		          placeholder:"Search for anyone ...",
@@ -93,14 +91,9 @@ var SearchBox = {
 	  	    							"username": result.items[i].properties.userName,
 	  	    							"email": result.items[i].properties.email
 	  	    					})
-		  	    			//console.log(result.items[i].properties.userName)
 		  	    			
 	  	    			} 
-	  	    			for (i = 0; i < mySearch.list.length; i++) {
-	  	    				
-		  	    			//console.log(mySearch.list[i])
-		  	    			
-	  	    			} 
+	  	    			
 	     	 			
 		  	    		console.log(mySearch.list);
 	         	 	})
@@ -158,7 +151,6 @@ var SearchBox = {
 	    auth2.signOut().then(function () {
 	      console.log('User signed out.');
 	    });
-	    //window.location.replace("byebye.html");
 	  }
 
 	  function onLoad() {
@@ -170,21 +162,12 @@ var SearchBox = {
 	var Hello = {
 			   view: function() {
 			   	return m('div', [
-			   		
-			   		/*m.element('header',{
-			   		  controller:function(){},
-			   		  view: function(ctrl){
-			   		    return m('$header#header', [
-			   					m('h1', 'todos')
-			   				])
-			   		  }
-			   		})*/
+			  
 			   		   m("nav", {class:"navbar is-fixed-top is-info  ", role:"navigation"}, [
 			   			   
 			   		       m("div", {class:"navbar-menu"}, [
 			   		    	m("div", {class:"navbar-start"}, [
 			   		    		
-			   		    		//m("p", {class: 'navbar-item is-size-4'}, 'TinyGram'),
 			   		    		m("img", {src:"/logo1.png",width:"90"}),
 			   		    		m("p", {class: 'navbar-item'}, '|'),
 			   		    		m("a", {class: 'navbar-item', href:"https://tinyinsta-295119.appspot.com/post.html"}, 'Home'),

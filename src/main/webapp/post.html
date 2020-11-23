@@ -120,14 +120,14 @@ var PostForm = {
 // TODO : Rendre loadList async pour récup les posts dès le début 
 var MyPost = {
 		oninit: fetchEmail(), 
+		listIndex: 0,
 		list: [],
 	    nextToken: "",
 	    loadList: function() {
 	        return m.request({
-	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost",
-	            params: {"name":me}, 
-	            })
+	    		method:"GET",
+	    		url: "_ah/api/myApi/v1/getposts/" +me 
+	    	})
 	        .then(function(result) {
 	        	console.log("list:",result)
 	        	MyPost.list=result.items
@@ -143,10 +143,11 @@ var MyPost = {
 	    		url: "_ah/api/myApi/v1/getposts/" +me 
 	    	})
 	        .then(function(result) {
+	        	MyPost.listIndex += 5
 	        	console.log("got:",result)
+	        	m.mount(document.body, Hello);
 	        	if(MyPost.nextToken=="") {
-	        		//MyPost.loadList()
-	        		result.items.map(function(item){MyPost.list.push(item)})
+
 	        	} else {
 	        	   	result.items.map(function(item){MyPost.list.push(item)})
 	        	}
@@ -189,7 +190,7 @@ var PostView = {
 	      m('th', {width:"50px"}, "Like"),
 	      m('th', {width:"50px"}, "Follow"),
 	    ]),
-	    MyPost.list.map(function(item) {
+	    MyPost.list.slice(0, MyPost.listIndex).map(function(item) {
 		      return m("tr", [
 	            m("td", m("button", {onclick: function(e) {
 					// +1 like au clic si pas déjà liké            	            	

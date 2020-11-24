@@ -41,11 +41,11 @@ Outre le fait de rendre l'application fonctionnelle, il nous a fallu travailler 
         
 - Combien de temps met l'application à retrouver les posts des comptes que l'utilisateur follow. On fonctionne ici avec un filtre posé sur les dates des posts et sur les noms des followsers. 
         
-        - 10 derniers posts : 300 ms
+        - 10 derniers posts : 308 ms
         
-        - 100 derniers posts : 346 ms
+        - 100 derniers posts : 3463 ms
         
-        - 500 derniers posts : 408 ms
+        - 500 derniers posts : 9632 ms
 
 
 ## Kinds utilisés dans notre appli
